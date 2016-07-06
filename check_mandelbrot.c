@@ -23,21 +23,21 @@ assert_doubles_equal(double a, double b)
     
 START_TEST(test_mandelbrot_stuff)
 {
-    struct ComplexPoint point = coords_for_pixel(0, 0);
-    ck_assert_int_eq(-2, point.x);
-    ck_assert_int_eq(-2, point.y);
+    complex double point = coords_for_pixel(0, 0);
+    ck_assert_int_eq(-2, creal(point));
+    ck_assert_int_eq(-2, cimag(point));
 
     point = coords_for_pixel(WIDTH, HEIGHT);
-    ck_assert_int_eq( 2, point.x);
-    ck_assert_int_eq( 2, point.y);
+    ck_assert_int_eq( 2, creal(point));
+    ck_assert_int_eq( 2, cimag(point));
 
     point = coords_for_pixel(WIDTH / 2, HEIGHT / 2);
-    ck_assert_int_eq( 0, point.x);
-    ck_assert_int_eq( 0, point.y);
+    ck_assert_int_eq( 0, creal(point));
+    ck_assert_int_eq( 0, cimag(point));
 
     point = coords_for_pixel(2 * WIDTH / 3, 5 * HEIGHT / 7);
-    assert_doubles_equal(0.664, point.x);
-    assert_doubles_equal(0.856, point.y);
+    assert_doubles_equal(0.664, creal(point));
+    assert_doubles_equal(0.856, cimag(point));
 }
 END_TEST
 

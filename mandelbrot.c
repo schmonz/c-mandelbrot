@@ -35,22 +35,16 @@ vertical_pixel_to_y_value(int vertical_pixel)
         + vertical_pixel / (HEIGHT/ (maximum_y - minimum_y));
 }
 
-struct ComplexPoint
+complex double
 coords_for_pixel(size_t i, size_t j)
 {
-    struct ComplexPoint rp = {
-        horizontal_pixel_to_x_value(i),
-        vertical_pixel_to_y_value(j)
-    };
-
-    return rp;
+    return horizontal_pixel_to_x_value(i) + I * vertical_pixel_to_y_value(j);
 }
 
 static size_t
-count_escape_time(struct ComplexPoint rp)
+count_escape_time(complex double c)
 {
     complex double z =  0.0 + I *  0.0;
-    complex double c = rp.x + I * rp.y;
 
     complex double temp;
 
