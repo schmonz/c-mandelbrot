@@ -5,9 +5,20 @@ CFLAGS		+= -g -O0 -Wall -Werror -Wextra -std=c99
 
 SILENT		= @
 
-all: mandelbrot
+all: check
+
+check: mandelbrot
+	${SILENT}./mandelbrot
+	${SILENT}open pngelbrot.png
+
+valgrind: mandelbrot
+	${SILENT}valgrind --leak-check=full --show-leak-kinds=all ./mandelbrot
+
+clean:
+	${SILENT}rm -f *.png *.a *.o mandelbrot
+	${SILENT}rm -rf *.dSYM
+
+.PHONY: all check valgrind clean
 
 mandelbrot: mandelbrot.c
-	${SILENT}${CC} ${CFLAGS} ${LIBS} -o mandelbrot mandelbrot.c
-	./mandelbrot
-	open pngelbrot.png
+	${SILENT}${CC} ${CFLAGS} -o mandelbrot mandelbrot.c ${LIBS}
