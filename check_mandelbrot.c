@@ -1,19 +1,43 @@
 #include <check.h>
 
+#include <math.h>
+#include <stdbool.h>
+#include <stdio.h>
+
 #include "mandelbrot.h"
+
+static void
+assert_doubles_equal(double a, double b)
+{
+    const double epsilon = 0.000000001;
+    if (fabs(a - b) < epsilon) {
+        ck_assert(true);
+    }
+    else if (a > b) {
+        ck_assert_msg(false, "first was bigger");
+    }
+    else {
+        ck_assert_msg(false, "second was bigger");
+    }
+}
     
 START_TEST(test_mandelbrot_stuff)
 {
-    ck_assert_int_eq(-2, horizontal_pixel_to_x_value(0));
-    ck_assert_int_eq( 2, horizontal_pixel_to_x_value(WIDTH));
-    ck_assert_int_eq( 0, horizontal_pixel_to_x_value(WIDTH / 2));
+    struct RealPoint rp = coords_for_pixel(0, 0);
+    ck_assert_int_eq(-2, rp.x);
+    ck_assert_int_eq(-2, rp.y);
 
-    ck_assert_int_eq(-2, vertical_pixel_to_y_value(0));
-    ck_assert_int_eq( 2, vertical_pixel_to_y_value(HEIGHT));
-    ck_assert_int_eq( 0, vertical_pixel_to_y_value(HEIGHT / 2));
+    rp = coords_for_pixel(WIDTH, HEIGHT);
+    ck_assert_int_eq( 2, rp.x);
+    ck_assert_int_eq( 2, rp.y);
 
-    // given pixel (50, 50), get value (0, 0)
-    // XXX now draw a circle
+    rp = coords_for_pixel(WIDTH / 2, HEIGHT / 2);
+    ck_assert_int_eq( 0, rp.x);
+    ck_assert_int_eq( 0, rp.y);
+
+    rp = coords_for_pixel(2 * WIDTH / 3, 5 * HEIGHT / 7);
+    assert_doubles_equal(0.64, rp.x);
+    assert_doubles_equal(0.84, rp.y);
 }
 END_TEST
 

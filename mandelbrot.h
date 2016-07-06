@@ -1,6 +1,12 @@
+#include <sys/types.h>
+
 #define WIDTH 100
 #define HEIGHT 100
 
+struct RealPoint {
+    double x;
+    double y;
+};
+
 void draw_something(void);
-double horizontal_pixel_to_x_value(int);
-double vertical_pixel_to_y_value(int);
+struct RealPoint coords_for_pixel(size_t, size_t);
