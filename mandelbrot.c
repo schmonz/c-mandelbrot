@@ -43,8 +43,8 @@ coords_for_pixel(size_t i, size_t j)
     return rp;
 }
 
-static bool
-this_point_is_good(struct ComplexPoint rp)
+static int
+is_in_mandelbrot_set(struct ComplexPoint rp)
 {
     const size_t maximum_iterations = 100;
 
@@ -65,26 +65,25 @@ this_point_is_good(struct ComplexPoint rp)
     return true;
 }
 
-static void
-maybe_color_this_pixel(gdImagePtr im, int color, size_t i, size_t j)
-{
-    if (this_point_is_good(coords_for_pixel(i, j)))
-        gdImageSetPixel(im, i, j, color);
-}
-
 void
 draw_something()
 {
     gdImagePtr im = gdImageCreate(WIDTH, HEIGHT);
     FILE *pngout;
     int white = gdImageColorAllocate(im, 255, 255, 255);
-    int black = gdImageColorAllocate(im, 0, 0, 0);
+    int black = gdImageColorAllocate(im,   0,   0,   0);
+    int blue  = gdImageColorAllocate(im, 176, 229, 247);
 
     color_all_pixels(im, white);
     
-    for (size_t i = 0; i < WIDTH; i++)
-        for (size_t j = 0; j < HEIGHT; j++)
-            maybe_color_this_pixel(im, black, i, j);
+    for (size_t i = 0; i < WIDTH; i++) {
+        for (size_t j = 0; j < HEIGHT; j++) {
+            if (is_in_mandelbrot_set(coords_for_pixel(i, j)))
+                gdImageSetPixel(im, i, j, black);
+            else
+                gdImageSetPixel(im, i, j, blue);
+        }
+    }
     
     pngout = fopen("pngelbrot.png", "wb");
     gdImagePng(im, pngout);
