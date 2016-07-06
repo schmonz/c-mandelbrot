@@ -2,7 +2,7 @@
 set -e
 
 expected_checksum() {
-	echo "9ad1e099ace407109333e05a3daf5a0ba06573e3"
+	echo "347a2e7441cf70ee1b4781946b5994ec36b8d865"
 }
 
 actual_checksum() {

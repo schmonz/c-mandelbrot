@@ -1,5 +1,6 @@
 #include <gd.h>
 
+#include <complex.h>
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -45,17 +46,23 @@ coords_for_pixel(size_t i, size_t j)
 static bool
 this_point_is_good(struct ComplexPoint rp)
 {
-    /* XXX C has complex multiplication, yeah? */
-    double x = 0.0, y = 0.0;
-    size_t iteration = 0;
-    size_t max_iterations = 100;
-    while ((x * x + y * y) < (2 * 2) && iteration < max_iterations) {
-        double xtemp = x * x - y * y + rp.x;
-        y = 2 * x * y + rp.y;
-        x = xtemp;
-        iteration++;
+    const size_t maximum_iterations = 100;
+
+    complex double z =  0.0 + I * 0.0;
+    complex double c = rp.x + I * rp.y;
+
+    complex double temp;
+
+    for (size_t iteration = 0; iteration < maximum_iterations; iteration++) {
+        temp = cpow(z, 2);
+
+        if (cabs(temp) > 2)
+            return false;
+
+        z = temp + c;
     }
-    return (iteration >= max_iterations);
+
+    return true;
 }
 
 static void
