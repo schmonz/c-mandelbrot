@@ -46,18 +46,18 @@ coords_for_pixel(size_t i, size_t j)
 }
 
 static size_t
-is_in_mandelbrot_set(struct ComplexPoint rp)
+count_escape_time(struct ComplexPoint rp)
 {
     complex double z =  0.0 + I *  0.0;
     complex double c = rp.x + I * rp.y;
 
     complex double temp;
 
-    for (size_t iteration = 0; iteration < MAXIMUM_ITERATIONS; iteration++) {
+    for (size_t escape_time = 0; escape_time < MAXIMUM_ITERATIONS; escape_time++) {
         temp = cpow(z, 2);
 
         if (cabs(temp) > 2)
-            return iteration;
+            return escape_time;
 
         z = temp + c;
     }
@@ -74,16 +74,19 @@ draw_something()
     int black = gdImageColorAllocate(im,   0,   0,   0);
     int blue  = gdImageColorAllocate(im, 176, 229, 247);
     int green = gdImageColorAllocate(im, 154, 227, 194);
+    int red   = gdImageColorAllocate(im, 245, 137, 169);
 
     color_all_pixels(im, white);
     
     for (size_t i = 0; i < WIDTH; i++) {
         for (size_t j = 0; j < HEIGHT; j++) {
-            size_t iterations = is_in_mandelbrot_set(coords_for_pixel(i, j));
-            if (iterations == 0)
+            size_t escape_time = count_escape_time(coords_for_pixel(i, j));
+            if (escape_time == 0)
                 gdImageSetPixel(im, i, j, black);
-            else if (iterations <= (MAXIMUM_ITERATIONS / 7))
+            else if (escape_time <= (MAXIMUM_ITERATIONS / 7))
                 gdImageSetPixel(im, i, j, blue);
+            else if (escape_time <= (MAXIMUM_ITERATIONS / 5))
+                gdImageSetPixel(im, i, j, red);
             else
                 gdImageSetPixel(im, i, j, green);
         }
