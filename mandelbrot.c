@@ -66,6 +66,19 @@ count_escape_time(struct ComplexPoint rp)
     return 0;
 }
 
+static int
+choose_color_for_escape_time(size_t escape_time)
+{
+    if (escape_time == 0)
+        return escape_time_colors[1];
+    else if (escape_time <= (MAXIMUM_ITERATIONS / 7))
+        return escape_time_colors[2];
+    else if (escape_time <= (MAXIMUM_ITERATIONS / 5))
+        return escape_time_colors[3];
+    else
+        return escape_time_colors[4];
+}
+
 void
 draw_something()
 {
@@ -82,14 +95,7 @@ draw_something()
     for (size_t i = 0; i < WIDTH; i++) {
         for (size_t j = 0; j < HEIGHT; j++) {
             size_t escape_time = count_escape_time(coords_for_pixel(i, j));
-            if (escape_time == 0)
-                gdImageSetPixel(im, i, j, escape_time_colors[1]);
-            else if (escape_time <= (MAXIMUM_ITERATIONS / 7))
-                gdImageSetPixel(im, i, j, escape_time_colors[2]);
-            else if (escape_time <= (MAXIMUM_ITERATIONS / 5))
-                gdImageSetPixel(im, i, j, escape_time_colors[3]);
-            else
-                gdImageSetPixel(im, i, j, escape_time_colors[4]);
+            gdImageSetPixel(im, i, j, choose_color_for_escape_time(escape_time));
         }
     }
     
