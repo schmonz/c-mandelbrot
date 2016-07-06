@@ -1,3 +1,5 @@
+THE_PROGRAM	= mandelbrot
+
 CFLAGS		:= $(shell pkg-config --cflags gdlib)
 LIBS		:= $(shell pkg-config --libs gdlib)
 
@@ -7,18 +9,18 @@ SILENT		= @
 
 all: check
 
-check: mandelbrot
-	${SILENT}./mandelbrot
+check: ${THE_PROGRAM}
+	${SILENT}./${THE_PROGRAM}
 	${SILENT}open pngelbrot.png
 
-valgrind: mandelbrot
-	${SILENT}valgrind --leak-check=full --show-leak-kinds=all ./mandelbrot
+valgrind: ${THE_PROGRAM}
+	${SILENT}valgrind --leak-check=full --show-leak-kinds=all ./${THE_PROGRAM}
 
 clean:
-	${SILENT}rm -f *.png *.a *.o mandelbrot
+	${SILENT}rm -f *.png *.a *.o ${THE_PROGRAM}
 	${SILENT}rm -rf *.dSYM
 
 .PHONY: all check valgrind clean
 
-mandelbrot: mandelbrot.c
-	${SILENT}${CC} ${CFLAGS} -o mandelbrot mandelbrot.c ${LIBS}
+${THE_PROGRAM}: mandelbrot.c
+	${SILENT}${CC} ${CFLAGS} -o ${THE_PROGRAM} mandelbrot.c ${LIBS}
