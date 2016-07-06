@@ -1,6 +1,8 @@
 # c-mandelbrot
 
-Drawing the Mandelbrot set in C.
+Drawing the Mandelbrot set in C:
+
+![Latest Image](https://github.com/schmonz/c-mandelbrot/raw/master/pngelbrot.png)
 
 ## TODO
 
