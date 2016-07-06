@@ -74,8 +74,8 @@ draw_something()
     escape_time_colors[0] = gdImageColorAllocate(im, 255, 255, 255);
     escape_time_colors[1] = gdImageColorAllocate(im,   0,   0,   0);
     escape_time_colors[2] = gdImageColorAllocate(im, 176, 229, 247);
-    escape_time_colors[4] = gdImageColorAllocate(im, 154, 227, 194);
     escape_time_colors[3] = gdImageColorAllocate(im, 245, 137, 169);
+    escape_time_colors[4] = gdImageColorAllocate(im, 154, 227, 194);
 
     color_all_pixels(im, escape_time_colors[0]);
     
