@@ -6,6 +6,8 @@
 #define WIDTH 100
 #define HEIGHT 100
 
+#include "mandelbrot.h"
+
 static void
 color_all_pixels(gdImagePtr im, int color)
 {
@@ -25,7 +27,7 @@ maybe_color_this_pixel(gdImagePtr im, int color, size_t x, size_t y)
         gdImageSetPixel(im, x, y, color);
 }
 
-static void
+void
 draw_something()
 {
     gdImagePtr im = gdImageCreate(WIDTH, HEIGHT);
@@ -44,10 +46,4 @@ draw_something()
     
     fclose(pngout);
     gdImageDestroy(im);
-}
-
-int
-main(void)
-{
-    draw_something();
 }
