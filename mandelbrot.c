@@ -73,6 +73,7 @@ draw_something()
     int white = gdImageColorAllocate(im, 255, 255, 255);
     int black = gdImageColorAllocate(im,   0,   0,   0);
     int blue  = gdImageColorAllocate(im, 176, 229, 247);
+    int green = gdImageColorAllocate(im, 154, 227, 194);
 
     color_all_pixels(im, white);
     
@@ -81,8 +82,10 @@ draw_something()
             size_t iterations = is_in_mandelbrot_set(coords_for_pixel(i, j));
             if (iterations == 0)
                 gdImageSetPixel(im, i, j, black);
-            else
+            else if (iterations <= (MAXIMUM_ITERATIONS / 7))
                 gdImageSetPixel(im, i, j, blue);
+            else
+                gdImageSetPixel(im, i, j, green);
         }
     }
     

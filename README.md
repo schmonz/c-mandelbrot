@@ -5,7 +5,6 @@ Drawing the Mandelbrot set in C.
 ## TODO
 
 7. Preserve aspect ratio, even when canvas width and height differ!
-7. Paint pixels in color by their "escape velocity".
 7. Try using an ApprovalTest library to check the generated image.
 7. Try another graphics library
    ([Cairo](https://www.cairographics.org/FAQ/#minimal_C_program)?).
