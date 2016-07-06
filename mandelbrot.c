@@ -3,9 +3,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#define WIDTH 100
-#define HEIGHT 100
-
 #include "mandelbrot.h"
 
 static void
@@ -46,4 +43,24 @@ draw_something()
     
     fclose(pngout);
     gdImageDestroy(im);
+}
+
+double
+horizontal_pixel_to_x_value(int horizontal_pixel)
+{
+    const int minimum_x = -2;
+    const int maximum_x =  2;
+
+    return minimum_x
+        + horizontal_pixel / (WIDTH / (maximum_x - minimum_x));
+}
+
+double
+vertical_pixel_to_y_value(int vertical_pixel)
+{
+    const int minimum_y = -2;
+    const int maximum_y =  2;
+
+    return minimum_y
+        + vertical_pixel / (HEIGHT/ (maximum_y - minimum_y));
 }

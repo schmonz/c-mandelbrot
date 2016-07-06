@@ -1,10 +1,19 @@
 #include <check.h>
 
 #include "mandelbrot.h"
-
+    
 START_TEST(test_mandelbrot_stuff)
 {
-    ck_assert_int_eq(1, 2 - 1);
+    ck_assert_int_eq(-2, horizontal_pixel_to_x_value(0));
+    ck_assert_int_eq( 2, horizontal_pixel_to_x_value(WIDTH));
+    ck_assert_int_eq( 0, horizontal_pixel_to_x_value(WIDTH / 2));
+
+    ck_assert_int_eq(-2, vertical_pixel_to_y_value(0));
+    ck_assert_int_eq( 2, vertical_pixel_to_y_value(HEIGHT));
+    ck_assert_int_eq( 0, vertical_pixel_to_y_value(HEIGHT / 2));
+
+    // given pixel (50, 50), get value (0, 0)
+    // XXX now draw a circle
 }
 END_TEST
 
@@ -39,12 +48,4 @@ main(void)
     srunner_free(sr);
 
     return number_failed;
-    
-    /* XXX
-     * get a prosthetic red test going
-     * given a pixel between horizontal-0 and max, get X coordinate
-     * same for Y
-     * now for both together
-     * now change the code to draw a circle
-     */
 }
