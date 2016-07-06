@@ -1,25 +1,8 @@
 #!/bin/sh
 set -e
 
-expected_checksum() {
-	echo "6321745ac64f77c2e6e745951bf1be81b735beef"
-}
-
-actual_checksum() {
-	shasum "$1" | awk '{print $1}'
-}
-
 main() {
-	expected=$(expected_checksum)
-	actual=$(actual_checksum "$1")
-	if [ $expected == $actual ]; then
-		exit 0
-	else
-		echo >&2 "'$1' has changed! now it's..."
-		echo >&2 $actual
-		open "$1"
-		exit 77
-	fi
+	exit $(git status -- "$1" | grep modified | wc -l)
 }
 
 main "$@"
