@@ -4,8 +4,9 @@ Drawing the Mandelbrot set in C.
 
 ## TODO
 
-7. Paint pixels black iff they're inside the M-set (after translating
-   pixels to complex coordinates and iterating till some limit).
+7. Use C's complex math functions.
+7. Draw it bigger.
+7. Preserve aspect ratio, even when canvas width and height differ!
 7. Paint pixels in color by their "escape velocity".
 7. Try using an ApprovalTest library to check the generated image.
 7. Try another graphics library

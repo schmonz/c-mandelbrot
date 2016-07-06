@@ -23,21 +23,21 @@ assert_doubles_equal(double a, double b)
     
 START_TEST(test_mandelbrot_stuff)
 {
-    struct RealPoint rp = coords_for_pixel(0, 0);
-    ck_assert_int_eq(-2, rp.x);
-    ck_assert_int_eq(-2, rp.y);
+    struct ComplexPoint point = coords_for_pixel(0, 0);
+    ck_assert_int_eq(-2, point.x);
+    ck_assert_int_eq(-2, point.y);
 
-    rp = coords_for_pixel(WIDTH, HEIGHT);
-    ck_assert_int_eq( 2, rp.x);
-    ck_assert_int_eq( 2, rp.y);
+    point = coords_for_pixel(WIDTH, HEIGHT);
+    ck_assert_int_eq( 2, point.x);
+    ck_assert_int_eq( 2, point.y);
 
-    rp = coords_for_pixel(WIDTH / 2, HEIGHT / 2);
-    ck_assert_int_eq( 0, rp.x);
-    ck_assert_int_eq( 0, rp.y);
+    point = coords_for_pixel(WIDTH / 2, HEIGHT / 2);
+    ck_assert_int_eq( 0, point.x);
+    ck_assert_int_eq( 0, point.y);
 
-    rp = coords_for_pixel(2 * WIDTH / 3, 5 * HEIGHT / 7);
-    assert_doubles_equal(0.64, rp.x);
-    assert_doubles_equal(0.84, rp.y);
+    point = coords_for_pixel(2 * WIDTH / 3, 5 * HEIGHT / 7);
+    assert_doubles_equal(0.64, point.x);
+    assert_doubles_equal(0.84, point.y);
 }
 END_TEST
 

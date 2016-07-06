@@ -2,7 +2,7 @@
 set -e
 
 expected_checksum() {
-	echo "4c5cc46abde9a90bdcc177fe19aae1265068b1c9"
+	echo "9ad1e099ace407109333e05a3daf5a0ba06573e3"
 }
 
 actual_checksum() {
@@ -17,6 +17,7 @@ main() {
 	else
 		echo >&2 "'$1' has changed! now it's..."
 		echo >&2 $actual
+		open "$1"
 		exit 77
 	fi
 }

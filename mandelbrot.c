@@ -1,6 +1,5 @@
 #include <gd.h>
 
-#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -32,10 +31,10 @@ vertical_pixel_to_y_value(int vertical_pixel)
         + vertical_pixel / (HEIGHT/ (maximum_y - minimum_y));
 }
 
-struct RealPoint
+struct ComplexPoint
 coords_for_pixel(size_t i, size_t j)
 {
-    struct RealPoint rp = {
+    struct ComplexPoint rp = {
         horizontal_pixel_to_x_value(i),
         vertical_pixel_to_y_value(j)
     };
@@ -44,9 +43,19 @@ coords_for_pixel(size_t i, size_t j)
 }
 
 static bool
-this_point_is_good(struct RealPoint rp)
+this_point_is_good(struct ComplexPoint rp)
 {
-    return (fabs(rp.x * rp.x + rp.y * rp.y - 1) < 0.1);
+    /* XXX C has complex multiplication, yeah? */
+    double x = 0.0, y = 0.0;
+    size_t iteration = 0;
+    size_t max_iterations = 100;
+    while ((x * x + y * y) < (2 * 2) && iteration < max_iterations) {
+        double xtemp = x * x - y * y + rp.x;
+        y = 2 * x * y + rp.y;
+        x = xtemp;
+        iteration++;
+    }
+    return (iteration >= max_iterations);
 }
 
 static void
