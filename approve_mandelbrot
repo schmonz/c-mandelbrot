@@ -1,0 +1,25 @@
+#!/bin/sh
+set -e
+
+expected_checksum() {
+	echo "c0aae508d1f07f18977533cc298883a64c2ba481"
+}
+
+actual_checksum() {
+	shasum "$1" | awk '{print $1}'
+}
+
+main() {
+	expected=$(expected_checksum)
+	actual=$(actual_checksum "$1")
+	if [ $expected == $actual ]; then
+		exit 0
+	else
+		echo >&2 "'$1' has changed! now it's..."
+		echo >&2 $actual
+		exit 77
+	fi
+}
+
+main "$@"
+exit $?

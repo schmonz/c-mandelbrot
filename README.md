@@ -4,13 +4,12 @@ Drawing the Mandelbrot set in C.
 
 ## TODO
 
-7. [Approval-test](https://github.com/kytrinyx/approvals) the
-   generated image.
 7. Paint pixels black iff they're inside the unit circle (after
    translating pixels to real (x,y) coordinates).
 7. Paint pixels black iff they're inside the M-set (after translating
    pixels to complex coordinates and iterating till some limit).
 7. Paint pixels in color by their "escape velocity".
+7. Try using an ApprovalTest library to check the generated image.
 7. Try another graphics library
    ([Cairo](https://www.cairographics.org/FAQ/#minimal_C_program)?).
 7. Zoom in (after taking optional command-line parameters)

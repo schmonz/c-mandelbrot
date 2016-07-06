@@ -1,3 +1,4 @@
+APPROVAL_TESTS	=  approve_mandelbrot
 THE_TESTS	=  check_mandelbrot
 THE_PROGRAM	=  mandelbrot
 
@@ -11,7 +12,7 @@ all: check
 
 check: ${THE_PROGRAM}
 	${SILENT}./${THE_PROGRAM}
-	${SILENT}open pngelbrot.png
+	${SILENT}./${APPROVAL_TESTS} pngelbrot.png
 
 valgrind: ${THE_PROGRAM}
 	${SILENT}valgrind --leak-check=full --show-leak-kinds=all ./${THE_PROGRAM}
