@@ -6,6 +6,8 @@
 
 #include "mandelbrot.h"
 
+const size_t MAXIMUM_ITERATIONS = 100;
+
 static void
 color_all_pixels(gdImagePtr im, int color)
 {
@@ -43,26 +45,24 @@ coords_for_pixel(size_t i, size_t j)
     return rp;
 }
 
-static int
+static size_t
 is_in_mandelbrot_set(struct ComplexPoint rp)
 {
-    const size_t maximum_iterations = 100;
-
-    complex double z =  0.0 + I * 0.0;
+    complex double z =  0.0 + I *  0.0;
     complex double c = rp.x + I * rp.y;
 
     complex double temp;
 
-    for (size_t iteration = 0; iteration < maximum_iterations; iteration++) {
+    for (size_t iteration = 0; iteration < MAXIMUM_ITERATIONS; iteration++) {
         temp = cpow(z, 2);
 
         if (cabs(temp) > 2)
-            return false;
+            return iteration;
 
         z = temp + c;
     }
 
-    return true;
+    return 0;
 }
 
 void
@@ -78,7 +78,8 @@ draw_something()
     
     for (size_t i = 0; i < WIDTH; i++) {
         for (size_t j = 0; j < HEIGHT; j++) {
-            if (is_in_mandelbrot_set(coords_for_pixel(i, j)))
+            size_t iterations = is_in_mandelbrot_set(coords_for_pixel(i, j));
+            if (iterations == 0)
                 gdImageSetPixel(im, i, j, black);
             else
                 gdImageSetPixel(im, i, j, blue);
