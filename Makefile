@@ -24,7 +24,7 @@ valgrind: ${THE_PROGRAM}
 	${SILENT}valgrind --leak-check=full --show-leak-kinds=all ./${THE_PROGRAM}
 
 clean:
-	${SILENT}rm -f *.png *.o ${THE_TESTS} ${THE_LIBRARY} ${THE_PROGRAM}
+	${SILENT}rm -f *.o ${THE_TESTS} ${THE_LIBRARY} ${THE_PROGRAM}
 	${SILENT}rm -rf *.dSYM
 
 .PHONY: all check approval valgrind clean

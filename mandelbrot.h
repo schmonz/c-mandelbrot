@@ -1,7 +1,7 @@
 #include <sys/types.h>
 
-#define WIDTH 100
-#define HEIGHT 100
+#define WIDTH 1000
+#define HEIGHT 1000
 
 struct ComplexPoint {
     double x;

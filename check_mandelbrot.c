@@ -36,8 +36,8 @@ START_TEST(test_mandelbrot_stuff)
     ck_assert_int_eq( 0, point.y);
 
     point = coords_for_pixel(2 * WIDTH / 3, 5 * HEIGHT / 7);
-    assert_doubles_equal(0.64, point.x);
-    assert_doubles_equal(0.84, point.y);
+    assert_doubles_equal(0.664, point.x);
+    assert_doubles_equal(0.856, point.y);
 }
 END_TEST
 
