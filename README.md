@@ -4,8 +4,6 @@ Drawing the Mandelbrot set in C.
 
 ## TODO
 
-7. Paint pixels black iff they're inside the unit circle (after
-   translating pixels to real (x,y) coordinates).
 7. Paint pixels black iff they're inside the M-set (after translating
    pixels to complex coordinates and iterating till some limit).
 7. Paint pixels in color by their "escape velocity".
