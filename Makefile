@@ -27,12 +27,22 @@ clean:
 	${SILENT}rm -f *.o ${THE_TESTS} ${THE_LIBRARY} ${THE_PROGRAM}
 	${SILENT}rm -rf *.dSYM
 
-.PHONY: all check approval valgrind clean
+is-check-installed:
+ifeq (, ${CHECK_LIBS})
+	${SILENT}echo "Please install Check (https://libcheck.github.io/check/)." && false
+endif
 
-${THE_TESTS}: ${THE_LIBRARY} check_mandelbrot.c
+is-gd-installed:
+ifeq (, ${GD_LIBS})
+	${SILENT}echo "Please install GD (http://libgd.github.io)." && false
+endif
+
+.PHONY: all check approval valgrind clean is-check-installed is-gd-installed
+
+${THE_TESTS}: is-check-installed ${THE_LIBRARY} check_mandelbrot.c
 	${SILENT}${CC} ${CFLAGS} ${GD_CFLAGS} ${CHECK_CFLAGS} -o ${THE_TESTS} check_mandelbrot.c ${GD_LIBS} ${CHECK_LIBS} ${THE_LIBRARY}
 
-${THE_LIBRARY}: mandelbrot.h mandelbrot.c
+${THE_LIBRARY}: is-gd-installed mandelbrot.h mandelbrot.c
 	${SILENT}${CC} ${CFLAGS} ${GD_CFLAGS} -c mandelbrot.c
 	${SILENT}ar rc ${THE_LIBRARY} mandelbrot.o
 	${SILENT}ranlib ${THE_LIBRARY}
