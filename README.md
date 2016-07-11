@@ -13,7 +13,9 @@ Now I'm drawing it in C:
 ## TODO
 
 7. Preserve aspect ratio, even when canvas width and height differ!
-7. Try using an ApprovalTest library to check the generated image.
+7. Try using
+   [C++ ApprovalTests](https://github.com/approvals/ApprovalTests.cpp)
+   to check the generated image.
 7. Try another graphics library
    ([Cairo](https://www.cairographics.org/FAQ/#minimal_C_program)?
    [AA-lib](http://aa-project.sourceforge.net/aalib/)?).
