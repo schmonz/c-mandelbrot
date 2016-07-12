@@ -20,8 +20,8 @@ approval: ${THE_PROGRAM}
 	${SILENT}./${THE_PROGRAM}
 	${SILENT}./${APPROVAL_TESTS} pngelbrot.png
 
-valgrind: ${THE_PROGRAM}
-	${SILENT}valgrind --leak-check=full --show-leak-kinds=all ./${THE_PROGRAM}
+valgrind: ${THE_TESTS}
+	${SILENT}valgrind --leak-check=full --show-leak-kinds=all ./${THE_TESTS}
 
 clean:
 	${SILENT}rm -f *.o ${THE_TESTS} ${THE_LIBRARY} ${THE_PROGRAM}

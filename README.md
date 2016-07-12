@@ -12,6 +12,7 @@ Now I'm drawing it in C:
 
 ## TODO
 
+7. Fix Valgrind errors.
 7. Preserve aspect ratio, even when canvas width and height differ!
 7. Try using
    [C++ ApprovalTests](https://github.com/approvals/ApprovalTests.cpp)
@@ -19,6 +20,8 @@ Now I'm drawing it in C:
 7. Try another graphics library
    ([Cairo](https://www.cairographics.org/FAQ/#minimal_C_program)?
    [AA-lib](http://aa-project.sourceforge.net/aalib/)?).
+7. Try `astyle`.
+7. Try `cppcheck`.
 7. Zoom in (after taking optional command-line parameters)
 7. Use higher-precision math (after zooming in far enough that it matters).
 7. If iterating over every pixel is slow, try tracing the boundary.
