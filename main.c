@@ -5,7 +5,7 @@
 #include "mandelbrot.h"
 
 static int usage(char *progname) {
-    printf("usage: %s <width-pixels> <height-pixels>\n", basename(progname));
+    printf("usage: %s <width> <height> <a> <b> <range>\n", basename(progname));
     return 77;
 }
 
