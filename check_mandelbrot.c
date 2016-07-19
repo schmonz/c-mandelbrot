@@ -20,24 +20,24 @@ assert_doubles_equal(double a, double b)
         ck_assert_msg(false, "second was bigger");
     }
 }
-    
-START_TEST(test_mandelbrot_stuff)
+
+static void
+assert_complex_points_equal(complex double expected, complex double actual)
 {
-    complex double point = coords_for_pixel(0, 0);
-    ck_assert_int_eq(-2, creal(point));
-    ck_assert_int_eq(-2, cimag(point));
-
-    point = coords_for_pixel(WIDTH, HEIGHT);
-    ck_assert_int_eq( 2, creal(point));
-    ck_assert_int_eq( 2, cimag(point));
-
-    point = coords_for_pixel(WIDTH / 2, HEIGHT / 2);
-    ck_assert_int_eq( 0, creal(point));
-    ck_assert_int_eq( 0, cimag(point));
-
-    point = coords_for_pixel(2 * WIDTH / 3, 5 * HEIGHT / 7);
-    assert_doubles_equal(0.665, creal(point));
-    assert_doubles_equal(0.855, cimag(point));
+    assert_doubles_equal(creal(expected), creal(actual));
+    assert_doubles_equal(cimag(expected), cimag(actual));
+}
+    
+START_TEST(test_complex_plane_coordinates)
+{
+    assert_complex_points_equal(   -2 +   - 2I,
+            coords_for_pixel(            0,              0));
+    assert_complex_points_equal(    2 +     2I,
+            coords_for_pixel(        WIDTH,         HEIGHT));
+    assert_complex_points_equal(    0 +     0I,
+            coords_for_pixel(    WIDTH / 2,     HEIGHT / 2));
+    assert_complex_points_equal(0.665 + 0.855I,
+            coords_for_pixel(2 * WIDTH / 3, 5 * HEIGHT / 7));
 }
 END_TEST
 
@@ -46,7 +46,7 @@ TCase
 {
     TCase *tc = tcase_create("Mandelbrot Test Case");
 
-    tcase_add_test(tc, test_mandelbrot_stuff);
+    tcase_add_test(tc, test_complex_plane_coordinates);
 
     return tc;
 }
