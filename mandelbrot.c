@@ -16,29 +16,52 @@ color_all_pixels(gdImagePtr im, size_t width, size_t height, int color)
 }
 
 static double
-horizontal_pixel_to_x_value(size_t width, int horizontal_pixel)
+horizontal_pixel_to_x_value(extremes_t extremes, size_t width, int horizontal_pixel)
 {
-    const double minimum_x = -2.0;
-    const double maximum_x =  2.0;
+    const double minimum_x = creal(extremes.lower_left);
+    const double maximum_x = creal(extremes.upper_right);
 
     return minimum_x
         + horizontal_pixel / (width / (maximum_x - minimum_x));
 }
 
 static double
-vertical_pixel_to_y_value(size_t height, int vertical_pixel)
+vertical_pixel_to_y_value(extremes_t extremes, size_t height, int vertical_pixel)
 {
-    const double minimum_y = -2.0;
-    const double maximum_y =  2.0;
+    const double minimum_y = cimag(extremes.lower_left);
+    const double maximum_y = cimag(extremes.upper_right);
 
     return minimum_y
         + vertical_pixel / (height / (maximum_y - minimum_y));
 }
 
+extremes_t
+get_extreme_coordinates(size_t width, size_t height)
+{
+    extremes_t coords;
+    const double longer_axis = 4.0;
+
+    if (width < height) {
+        coords.lower_left = 0.0 - (longer_axis * width/height) / 2.0
+            - I * (longer_axis) / 2.0;
+        coords.upper_right = 0.0 + (longer_axis * width/height) / 2.0
+            + I * (longer_axis) / 2.0;
+    } else {
+        coords.lower_left = 0.0 - (longer_axis) / 2.0
+            - I * (longer_axis * height/width) / 2.0;
+        coords.upper_right = 0.0 + (longer_axis) / 2.0
+            + I * (longer_axis * height/width) / 2.0;
+    }
+
+    return coords;
+}
+
 complex double
 coords_for_pixel(size_t width, size_t height, size_t i, size_t j)
 {
-    return horizontal_pixel_to_x_value(width, i) + I * vertical_pixel_to_y_value(height, j);
+    extremes_t extremes = get_extreme_coordinates(width, height);
+    return horizontal_pixel_to_x_value(extremes, width, i)
+        + I * vertical_pixel_to_y_value(extremes, height, j);
 }
 
 static size_t
