@@ -36,30 +36,29 @@ vertical_pixel_to_y_value(extremes_t extremes, size_t height, int vertical_pixel
 }
 
 extremes_t
-get_extreme_coordinates(size_t width, size_t height)
+get_extreme_coordinates(size_t width, size_t height, double range)
 {
     extremes_t coords;
-    const double longer_axis = 4.0;
 
     if (width < height) {
-        coords.lower_left = 0.0 - (longer_axis * width/height) / 2.0
-            - I * (longer_axis) / 2.0;
-        coords.upper_right = 0.0 + (longer_axis * width/height) / 2.0
-            + I * (longer_axis) / 2.0;
+        coords.lower_left = 0.0 - (range * width/height) / 2.0
+            - I * (range) / 2.0;
+        coords.upper_right = 0.0 + (range * width/height) / 2.0
+            + I * (range) / 2.0;
     } else {
-        coords.lower_left = 0.0 - (longer_axis) / 2.0
-            - I * (longer_axis * height/width) / 2.0;
-        coords.upper_right = 0.0 + (longer_axis) / 2.0
-            + I * (longer_axis * height/width) / 2.0;
+        coords.lower_left = 0.0 - (range) / 2.0
+            - I * (range * height/width) / 2.0;
+        coords.upper_right = 0.0 + (range) / 2.0
+            + I * (range * height/width) / 2.0;
     }
 
     return coords;
 }
 
 complex double
-coords_for_pixel(size_t width, size_t height, size_t i, size_t j)
+coords_for_pixel(size_t width, size_t height, double range, size_t i, size_t j)
 {
-    extremes_t extremes = get_extreme_coordinates(width, height);
+    extremes_t extremes = get_extreme_coordinates(width, height, range);
     return horizontal_pixel_to_x_value(extremes, width, i)
         + I * vertical_pixel_to_y_value(extremes, height, j);
 }
@@ -97,7 +96,7 @@ choose_color_for_escape_time(size_t escape_time)
 }
 
 void
-draw_something(size_t width, size_t height)
+draw_something(size_t width, size_t height, double range)
 {
     gdImagePtr im = gdImageCreate(width, height);
     FILE *pngout;
@@ -111,7 +110,7 @@ draw_something(size_t width, size_t height)
     
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
-            size_t escape_time = count_escape_time(coords_for_pixel(width, height, i, j));
+            size_t escape_time = count_escape_time(coords_for_pixel(width, height, range, i, j));
             gdImageSetPixel(im, i, j, choose_color_for_escape_time(escape_time));
         }
     }
