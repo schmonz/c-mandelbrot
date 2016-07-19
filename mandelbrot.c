@@ -7,7 +7,7 @@
 #include "mandelbrot.h"
 
 const size_t MAXIMUM_ITERATIONS = 100;
-int escape_time_colors[5];
+int escape_colors[5];
 
 static void
 color_all_pixels(gdImagePtr im, size_t width, size_t height, int color)
@@ -64,17 +64,17 @@ coords_for_pixel(size_t width, size_t height, double range, size_t i, size_t j)
 }
 
 static size_t
-count_escape_time(complex double c)
+count_escape(complex double c)
 {
     complex double z =  0.0 + I *  0.0;
 
     complex double temp;
 
-    for (size_t escape_time = 0; escape_time < MAXIMUM_ITERATIONS; escape_time++) {
+    for (size_t escape = 0; escape < MAXIMUM_ITERATIONS; escape++) {
         temp = cpow(z, 2);
 
         if (cabs(temp) > 2)
-            return escape_time;
+            return escape;
 
         z = temp + c;
     }
@@ -83,16 +83,16 @@ count_escape_time(complex double c)
 }
 
 static int
-choose_color_for_escape_time(size_t escape_time)
+choose_color_for_escape(size_t escape)
 {
-    if (escape_time == 0)
-        return escape_time_colors[1];
-    else if (escape_time <= (MAXIMUM_ITERATIONS / 7))
-        return escape_time_colors[2];
-    else if (escape_time <= (MAXIMUM_ITERATIONS / 5))
-        return escape_time_colors[3];
+    if (escape == 0)
+        return escape_colors[1];
+    else if (escape <= (MAXIMUM_ITERATIONS / 7))
+        return escape_colors[2];
+    else if (escape <= (MAXIMUM_ITERATIONS / 5))
+        return escape_colors[3];
     else
-        return escape_time_colors[4];
+        return escape_colors[4];
 }
 
 void
@@ -100,18 +100,18 @@ draw_something(size_t width, size_t height, double range)
 {
     gdImagePtr im = gdImageCreate(width, height);
     FILE *pngout;
-    escape_time_colors[0] = gdImageColorAllocate(im, 255, 255, 255);
-    escape_time_colors[1] = gdImageColorAllocate(im,   0,   0,   0);
-    escape_time_colors[2] = gdImageColorAllocate(im, 176, 229, 247);
-    escape_time_colors[3] = gdImageColorAllocate(im, 245, 137, 169);
-    escape_time_colors[4] = gdImageColorAllocate(im, 154, 227, 194);
+    escape_colors[0] = gdImageColorAllocate(im, 255, 255, 255);
+    escape_colors[1] = gdImageColorAllocate(im,   0,   0,   0);
+    escape_colors[2] = gdImageColorAllocate(im, 176, 229, 247);
+    escape_colors[3] = gdImageColorAllocate(im, 245, 137, 169);
+    escape_colors[4] = gdImageColorAllocate(im, 154, 227, 194);
 
-    color_all_pixels(im, width, height, escape_time_colors[0]);
+    color_all_pixels(im, width, height, escape_colors[0]);
     
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
-            size_t escape_time = count_escape_time(coords_for_pixel(width, height, range, i, j));
-            gdImageSetPixel(im, i, j, choose_color_for_escape_time(escape_time));
+            size_t escape = count_escape(coords_for_pixel(width, height, range, i, j));
+            gdImageSetPixel(im, i, j, choose_color_for_escape(escape));
         }
     }
     
