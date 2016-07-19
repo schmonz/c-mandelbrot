@@ -32,15 +32,16 @@ START_TEST(test_complex_plane_coordinates)
 {
     const int width = 800, height = width;
     const double range = 4.0;
+    complex double center = 0 + I * 0;
 
-    extremes_t foo = get_extreme_coordinates(width, height, range);
+    extremes_t foo = get_extreme_coordinates(width, height, center, range);
     assert_complex_points_equal(-2 - I * 2, foo.lower_left);
     assert_complex_points_equal( 2 + I * 2, foo.upper_right);
 
     assert_complex_points_equal(    0 + I * 0,
-            coords_for_pixel(width, height, range,     width / 2,     height / 2));
+            coords_for_pixel(width, height, center, range,     width / 2,     height / 2));
     assert_complex_points_equal(0.665 + I * 0.855,
-            coords_for_pixel(width, height, range, 2 * width / 3, 5 * height / 7));
+            coords_for_pixel(width, height, center, range, 2 * width / 3, 5 * height / 7));
 }
 END_TEST
 
@@ -48,8 +49,9 @@ START_TEST(test_aspect_ratio_in_portrait)
 {
     const int width = 500, height = 800;
     const double range = 2.0;
+    complex double center = 0 + I * 0;
 
-    extremes_t foo = get_extreme_coordinates(width, height, range);
+    extremes_t foo = get_extreme_coordinates(width, height, center, range);
     assert_complex_points_equal(-0.625 - I * 1.0, foo.lower_left);
     assert_complex_points_equal( 0.625 + I * 1.0, foo.upper_right);
 }
@@ -59,10 +61,11 @@ START_TEST(test_aspect_ratio_in_landscape)
 {
     const int width = 600, height = 450;
     const double range = 4.0;
+    complex double center = -0.25 + I * 0.0;
 
-    extremes_t foo = get_extreme_coordinates(width, height, range);
-    assert_complex_points_equal(-2.0 - I * 1.5, foo.lower_left);
-    assert_complex_points_equal( 2.0 + I * 1.5, foo.upper_right);
+    extremes_t foo = get_extreme_coordinates(width, height, center, range);
+    assert_complex_points_equal(-2.25 - I * 1.5, foo.lower_left);
+    assert_complex_points_equal( 1.75 + I * 1.5, foo.upper_right);
 }
 END_TEST
 

@@ -36,19 +36,19 @@ vertical_pixel_to_y_value(extremes_t extremes, size_t height, int vertical_pixel
 }
 
 extremes_t
-get_extreme_coordinates(size_t width, size_t height, double range)
+get_extreme_coordinates(size_t width, size_t height, complex double center, double range)
 {
     extremes_t coords;
 
     if (width < height) {
-        coords.lower_left = 0.0 - (range * width/height) / 2.0
+        coords.lower_left = creal(center) - (range * width/height) / 2.0
             - I * (range) / 2.0;
-        coords.upper_right = 0.0 + (range * width/height) / 2.0
+        coords.upper_right = creal(center) + (range * width/height) / 2.0
             + I * (range) / 2.0;
     } else {
-        coords.lower_left = 0.0 - (range) / 2.0
+        coords.lower_left = creal(center) - (range) / 2.0
             - I * (range * height/width) / 2.0;
-        coords.upper_right = 0.0 + (range) / 2.0
+        coords.upper_right = creal(center) + (range) / 2.0
             + I * (range * height/width) / 2.0;
     }
 
@@ -56,9 +56,9 @@ get_extreme_coordinates(size_t width, size_t height, double range)
 }
 
 complex double
-coords_for_pixel(size_t width, size_t height, double range, size_t i, size_t j)
+coords_for_pixel(size_t width, size_t height, complex double center, double range, size_t i, size_t j)
 {
-    extremes_t extremes = get_extreme_coordinates(width, height, range);
+    extremes_t extremes = get_extreme_coordinates(width, height, center, range);
     return horizontal_pixel_to_x_value(extremes, width, i)
         + I * vertical_pixel_to_y_value(extremes, height, j);
 }
@@ -96,7 +96,7 @@ choose_color_for_escape(size_t escape)
 }
 
 void
-draw_something(size_t width, size_t height, double range)
+draw_something(size_t width, size_t height, complex double center, double range)
 {
     gdImagePtr im = gdImageCreate(width, height);
     FILE *pngout;
@@ -110,7 +110,7 @@ draw_something(size_t width, size_t height, double range)
     
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
-            size_t escape = count_escape(coords_for_pixel(width, height, range, i, j));
+            size_t escape = count_escape(coords_for_pixel(width, height, center, range, i, j));
             gdImageSetPixel(im, i, j, choose_color_for_escape(escape));
         }
     }

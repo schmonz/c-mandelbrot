@@ -17,7 +17,7 @@ check: ${THE_TESTS}
 	${SILENT}./${THE_TESTS}
 
 approval: ${THE_PROGRAM}
-	${SILENT}./${THE_PROGRAM} 800 500 4.0
+	${SILENT}./${THE_PROGRAM} 800 500 0.0 0.0 4.0
 	${SILENT}./${APPROVAL_TESTS} pngelbrot.png
 
 valgrind: ${THE_TESTS}
