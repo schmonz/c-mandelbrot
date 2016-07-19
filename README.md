@@ -13,7 +13,6 @@ Now I'm drawing it in C:
 ## TODO
 
 7. Fix Valgrind errors.
-7. Preserve aspect ratio, even when canvas width and height differ!
 7. Try using
    [C++ ApprovalTests](https://github.com/approvals/ApprovalTests.cpp)
    to check the generated image.
