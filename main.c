@@ -3,5 +3,5 @@
 int
 main(void)
 {
-    draw_something();
+    draw_something(800, 800);
 }

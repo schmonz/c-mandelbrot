@@ -30,14 +30,15 @@ assert_complex_points_equal(complex double expected, complex double actual)
     
 START_TEST(test_complex_plane_coordinates)
 {
-    assert_complex_points_equal(   -2 +   - 2I,
-            coords_for_pixel(            0,              0));
-    assert_complex_points_equal(    2 +     2I,
-            coords_for_pixel(        WIDTH,         HEIGHT));
-    assert_complex_points_equal(    0 +     0I,
-            coords_for_pixel(    WIDTH / 2,     HEIGHT / 2));
-    assert_complex_points_equal(0.665 + 0.855I,
-            coords_for_pixel(2 * WIDTH / 3, 5 * HEIGHT / 7));
+    const int width = 800, height = 800;
+    assert_complex_points_equal(   -2 - I * 2,
+            coords_for_pixel(width, height,            0,              0));
+    assert_complex_points_equal(    2 + I * 2,
+            coords_for_pixel(width, height,        width,         height));
+    assert_complex_points_equal(    0 + I * 0,
+            coords_for_pixel(width, height,    width / 2,     height / 2));
+    assert_complex_points_equal(0.665 + I * 0.855,
+            coords_for_pixel(width, height,2 * width / 3, 5 * height / 7));
 }
 END_TEST
 

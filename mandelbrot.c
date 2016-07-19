@@ -10,35 +10,35 @@ const size_t MAXIMUM_ITERATIONS = 100;
 int escape_time_colors[5];
 
 static void
-color_all_pixels(gdImagePtr im, int color)
+color_all_pixels(gdImagePtr im, size_t width, size_t height, int color)
 {
-    gdImageFilledRectangle(im, 0, 0, WIDTH - 1, HEIGHT - 1, color);
+    gdImageFilledRectangle(im, 0, 0, width - 1, height - 1, color);
 }
 
 static double
-horizontal_pixel_to_x_value(int horizontal_pixel)
+horizontal_pixel_to_x_value(size_t width, int horizontal_pixel)
 {
     const double minimum_x = -2.0;
     const double maximum_x =  2.0;
 
     return minimum_x
-        + horizontal_pixel / (WIDTH / (maximum_x - minimum_x));
+        + horizontal_pixel / (width / (maximum_x - minimum_x));
 }
 
 static double
-vertical_pixel_to_y_value(int vertical_pixel)
+vertical_pixel_to_y_value(size_t height, int vertical_pixel)
 {
     const double minimum_y = -2.0;
     const double maximum_y =  2.0;
 
     return minimum_y
-        + vertical_pixel / (HEIGHT/ (maximum_y - minimum_y));
+        + vertical_pixel / (height / (maximum_y - minimum_y));
 }
 
 complex double
-coords_for_pixel(size_t i, size_t j)
+coords_for_pixel(size_t width, size_t height, size_t i, size_t j)
 {
-    return horizontal_pixel_to_x_value(i) + I * vertical_pixel_to_y_value(j);
+    return horizontal_pixel_to_x_value(width, i) + I * vertical_pixel_to_y_value(height, j);
 }
 
 static size_t
@@ -74,9 +74,9 @@ choose_color_for_escape_time(size_t escape_time)
 }
 
 void
-draw_something()
+draw_something(size_t width, size_t height)
 {
-    gdImagePtr im = gdImageCreate(WIDTH, HEIGHT);
+    gdImagePtr im = gdImageCreate(width, height);
     FILE *pngout;
     escape_time_colors[0] = gdImageColorAllocate(im, 255, 255, 255);
     escape_time_colors[1] = gdImageColorAllocate(im,   0,   0,   0);
@@ -84,11 +84,11 @@ draw_something()
     escape_time_colors[3] = gdImageColorAllocate(im, 245, 137, 169);
     escape_time_colors[4] = gdImageColorAllocate(im, 154, 227, 194);
 
-    color_all_pixels(im, escape_time_colors[0]);
+    color_all_pixels(im, width, height, escape_time_colors[0]);
     
-    for (size_t i = 0; i < WIDTH; i++) {
-        for (size_t j = 0; j < HEIGHT; j++) {
-            size_t escape_time = count_escape_time(coords_for_pixel(i, j));
+    for (size_t i = 0; i < width; i++) {
+        for (size_t j = 0; j < height; j++) {
+            size_t escape_time = count_escape_time(coords_for_pixel(width, height, i, j));
             gdImageSetPixel(im, i, j, choose_color_for_escape_time(escape_time));
         }
     }
