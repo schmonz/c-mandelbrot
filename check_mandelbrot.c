@@ -49,11 +49,11 @@ START_TEST(test_aspect_ratio_in_portrait)
 {
     const int width = 500, height = 800;
     const double range = 2.0;
-    complex double center = 0 + I * 0;
+    complex double center = 0.25 + I * -0.3;
 
     extremes_t foo = get_extreme_coordinates(width, height, center, range);
-    assert_complex_points_equal(-0.625 - I * 1.0, foo.lower_left);
-    assert_complex_points_equal( 0.625 + I * 1.0, foo.upper_right);
+    assert_complex_points_equal(-0.375 - I * 1.3, foo.lower_left);
+    assert_complex_points_equal( 0.875 + I * 0.7, foo.upper_right);
 }
 END_TEST
 
@@ -61,11 +61,11 @@ START_TEST(test_aspect_ratio_in_landscape)
 {
     const int width = 600, height = 450;
     const double range = 4.0;
-    complex double center = -0.25 + I * 0.0;
+    complex double center = -0.25 + I * 0.3;
 
     extremes_t foo = get_extreme_coordinates(width, height, center, range);
-    assert_complex_points_equal(-2.25 - I * 1.5, foo.lower_left);
-    assert_complex_points_equal( 1.75 + I * 1.5, foo.upper_right);
+    assert_complex_points_equal(-2.25 - I * 1.2, foo.lower_left);
+    assert_complex_points_equal( 1.75 + I * 1.8, foo.upper_right);
 }
 END_TEST
 

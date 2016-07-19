@@ -42,13 +42,17 @@ get_extreme_coordinates(size_t width, size_t height, complex double center, doub
 
     if (width < height) {
         coords.lower_left = creal(center) - (range * width/height) / 2.0
+            + I * cimag(center)
             - I * (range) / 2.0;
         coords.upper_right = creal(center) + (range * width/height) / 2.0
+            + I * cimag(center)
             + I * (range) / 2.0;
     } else {
         coords.lower_left = creal(center) - (range) / 2.0
+            + I * cimag(center)
             - I * (range * height/width) / 2.0;
         coords.upper_right = creal(center) + (range) / 2.0
+            + I * cimag(center)
             + I * (range * height/width) / 2.0;
     }
 

@@ -21,7 +21,6 @@ Now I'm drawing it in C:
    [AA-lib](http://aa-project.sourceforge.net/aalib/)?).
 7. Try `astyle`.
 7. Try `cppcheck`.
-7. Zoom in (after taking optional command-line parameters)
 7. Use higher-precision math (after zooming in far enough that it matters).
 7. If iterating over every pixel is slow, try tracing the boundary.
 7. In a Mac GUI, display the initial image (then maybe add features).
