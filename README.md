@@ -17,6 +17,7 @@ Now I'm drawing it in C:
 7. Try another graphics library
    ([Cairo](https://www.cairographics.org/FAQ/#minimal_C_program)?
    [AA-lib](http://aa-project.sourceforge.net/aalib/)?).
+7. Use GNU Automake, Autoconf, Libtool.
 7. If iterating over every pixel is slow, try:
     - parallelizing computation in multiple threads (with OpenMP or similar)
     - offloading to a GPU (with OpenCL or similar)
