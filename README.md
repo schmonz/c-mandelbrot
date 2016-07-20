@@ -12,20 +12,23 @@ Now I'm drawing it in C:
 
 ## TODO
 
-7. Fix Valgrind errors.
-7. Try using
-   [C++ ApprovalTests](https://github.com/approvals/ApprovalTests.cpp)
-   to check the generated image.
+7. Use [higher-precision math](https://gmplib.org),
+   and compare before/after on sufficiently zoomed-in images.
 7. Try another graphics library
    ([Cairo](https://www.cairographics.org/FAQ/#minimal_C_program)?
    [AA-lib](http://aa-project.sourceforge.net/aalib/)?).
-7. Try `astyle`.
-7. Try `cppcheck`.
-7. Use higher-precision math (after zooming in far enough that it matters).
 7. If iterating over every pixel is slow, try:
     - parallelizing computation in multiple threads (with OpenMP or similar)
     - offloading to a GPU (with OpenCL or similar)
     - tracing the boundary
 7. Auto-scale number of iterations with zoom level.
+7. Fix Valgrind errors.
+7. On OS X, try
+   [Guard Malloc](https://developer.apple.com/library/mac/documentation/Performance/Conceptual/ManagingMemory/Articles/MallocDebug.html).
+7. Try using
+   [C++ ApprovalTests](https://github.com/approvals/ApprovalTests.cpp)
+   to check the generated image.
+7. Try `astyle`.
+7. Try `cppcheck`.
 7. In a Mac GUI, display the initial image (then maybe add features).
 7. In an iPhone app, pinch to zoom (then maybe port to iPad).
