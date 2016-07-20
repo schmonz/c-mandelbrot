@@ -22,7 +22,10 @@ Now I'm drawing it in C:
 7. Try `astyle`.
 7. Try `cppcheck`.
 7. Use higher-precision math (after zooming in far enough that it matters).
-7. If iterating over every pixel is slow, try tracing the boundary.
-7. Or try offloading to a GPU with OpenCL or something.
+7. If iterating over every pixel is slow, try:
+    - parallelizing computation in multiple threads (with OpenMP or similar)
+    - offloading to a GPU (with OpenCL or similar)
+    - tracing the boundary
+7. Auto-scale number of iterations with zoom level.
 7. In a Mac GUI, display the initial image (then maybe add features).
 7. In an iPhone app, pinch to zoom (then maybe port to iPad).
