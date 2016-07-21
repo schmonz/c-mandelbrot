@@ -70,20 +70,24 @@ coords_for_pixel(size_t width, size_t height, complex double center, double rang
 static size_t
 count_escape(complex double c)
 {
-    complex double z =  0.0 + I *  0.0;
+    size_t escape = 0;
 
+    complex double z = 0.0 + I * 0.0;
     complex double temp;
 
-    for (size_t escape = 0; escape < MAXIMUM_ITERATIONS; escape++) {
+    for (; escape < MAXIMUM_ITERATIONS; escape++) {
         temp = cpow(z, 2);
 
         if (cabs(temp) > 2)
-            return escape;
+            break;
 
         z = temp + c;
     }
 
-    return 0;
+    if (escape == MAXIMUM_ITERATIONS)
+        escape = 0;
+
+    return escape;
 }
 
 static int
