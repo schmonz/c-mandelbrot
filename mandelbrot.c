@@ -70,7 +70,6 @@ coords_for_pixel(size_t width, size_t height, complex double center, double rang
         + I * vertical_pixel_to_y_value(extremes, height, j);
 }
 
-#ifdef USE_MPC
 size_t
 count_escape(complex double c)
 {
@@ -79,10 +78,12 @@ count_escape(complex double c)
      * then zoom and zoom and zoom and see when the image differs
      * if it's good, extract both impls into libs
      * choose best available at build/link time
+     * or at runtime?
      * detect MPC more accurately
      */
     size_t escape = 0;
 
+#ifdef USE_MPC
     const mpfr_prec_t precision = 53;
     mpc_rnd_t rounding_mode = MPC_RNDNN;
 
@@ -108,19 +109,7 @@ count_escape(complex double c)
     mpc_clear(my_c);
     mpc_clear(my_temp);
     mpc_clear(my_z);
-
-    if (escape == MAXIMUM_ITERATIONS)
-        escape = 0;
-
-    return escape;
-}
-
 #else
-size_t
-count_escape(complex double c)
-{
-    size_t escape = 0;
-
     complex double z = 0.0 + I * 0.0;
     complex double temp;
 
@@ -132,13 +121,13 @@ count_escape(complex double c)
 
         z = temp + c;
     }
+#endif /* USE_MPC */
 
     if (escape == MAXIMUM_ITERATIONS)
         escape = 0;
 
     return escape;
 }
-#endif
 
 static int
 choose_color_for_escape(size_t escape)
