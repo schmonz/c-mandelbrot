@@ -115,17 +115,17 @@ draw_something(size_t width, size_t height, complex double center, double range)
     escape_colors[4] = gdImageColorAllocate(im, 154, 227, 194);
 
     color_all_pixels(im, width, height, escape_colors[0]);
-    
+
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
             size_t escape = count_escape(coords_for_pixel(width, height, center, range, i, j));
             gdImageSetPixel(im, i, j, choose_color_for_escape(escape));
         }
     }
-    
+
     pngout = fopen("pngelbrot.png", "wb");
     gdImagePng(im, pngout);
-    
+ 
     fclose(pngout);
     gdImageDestroy(im);
 }
