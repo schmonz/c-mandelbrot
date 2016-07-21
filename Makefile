@@ -9,6 +9,8 @@ GD_LIBS		:= $(shell pkg-config --libs gdlib)
 CHECK_CFLAGS	:= $(shell pkg-config --cflags check)
 CHECK_LIBS	:= $(shell pkg-config --libs check)
 
+BUILD_WITH_MPC	?= no
+
 SILENT		=  @
 
 all: check approval
@@ -37,15 +39,21 @@ ifeq (, ${GD_LIBS})
 	${SILENT}echo "Please install GD (http://libgd.github.io)." && false
 endif
 
-.PHONY: all check approval valgrind clean is-check-installed is-gd-installed
+is-mpc-installed:
+ifeq (yes, ${BUILD_WITH_MPC}) # XXX a little too phony
+MPC_CFLAGS	=  -DUSE_MPC ${GD_CFLAGS}
+MPC_LIBS	=  -lmpc -lmpfr -lgmp
+endif
+
+.PHONY: all check approval valgrind clean is-check-installed is-gd-installed is-mpc-installed
 
 ${THE_TESTS}: is-check-installed ${THE_LIBRARY} check_mandelbrot.c
-	${SILENT}${CC} ${CFLAGS} ${GD_CFLAGS} ${CHECK_CFLAGS} -o ${THE_TESTS} check_mandelbrot.c ${GD_LIBS} ${CHECK_LIBS} ${THE_LIBRARY}
+	${SILENT}${CC} ${CFLAGS} ${GD_CFLAGS} ${CHECK_CFLAGS} -o ${THE_TESTS} check_mandelbrot.c ${GD_LIBS} ${MPC_LIBS} ${CHECK_LIBS} ${THE_LIBRARY}
 
-${THE_LIBRARY}: is-gd-installed mandelbrot.h mandelbrot.c
-	${SILENT}${CC} ${CFLAGS} ${GD_CFLAGS} -c mandelbrot.c
+${THE_LIBRARY}: is-gd-installed is-mpc-installed mandelbrot.h mandelbrot.c
+	${SILENT}${CC} ${CFLAGS} ${GD_CFLAGS} ${MPC_CFLAGS} -c mandelbrot.c
 	${SILENT}ar rc ${THE_LIBRARY} mandelbrot.o
 	${SILENT}ranlib ${THE_LIBRARY}
 
 ${THE_PROGRAM}: ${THE_LIBRARY} mandelbrot.h main.c
-	${SILENT}${CC} ${CFLAGS} -o ${THE_PROGRAM} main.c ${GD_LIBS} ${THE_LIBRARY}
+	${SILENT}${CC} ${CFLAGS} -o ${THE_PROGRAM} main.c ${GD_LIBS} ${MPC_LIBS} ${THE_LIBRARY}

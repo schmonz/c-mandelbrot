@@ -2,7 +2,10 @@
 
 #include <complex.h>
 #include <stdbool.h>
-#include <stdio.h>
+
+#ifdef USE_MPC
+#include <mpc.h>
+#endif
 
 #include "mandelbrot.h"
 
@@ -67,7 +70,53 @@ coords_for_pixel(size_t width, size_t height, complex double center, double rang
         + I * vertical_pixel_to_y_value(extremes, height, j);
 }
 
-static size_t
+#ifdef USE_MPC
+size_t
+count_escape(complex double c)
+{
+    /*
+     * this seems slow! but maybe needed past a certain zoom level
+     * then zoom and zoom and zoom and see when the image differs
+     * if it's good, extract both impls into libs
+     * choose best available at build/link time
+     * detect MPC more accurately
+     */
+    size_t escape = 0;
+
+    const mpfr_prec_t precision = 53;
+    mpc_rnd_t rounding_mode = MPC_RNDNN;
+
+    mpc_t my_z, my_temp, my_c;
+    mpfr_t my_mpfr_absolute_value;
+    mpc_init2(my_z, precision), mpc_init2(my_temp, precision), mpc_init2(my_c, precision);
+    mpfr_init2(my_mpfr_absolute_value, precision);
+
+    mpc_set_dc(my_c, c, rounding_mode);
+    mpc_set_dc(my_z, 0.0 + I * 0.0, rounding_mode);
+
+    for (; escape < MAXIMUM_ITERATIONS; escape++) {
+        mpc_pow_d(my_temp, my_z, 2.0, rounding_mode);
+
+        mpc_abs(my_mpfr_absolute_value, my_temp, rounding_mode);
+        if (mpfr_get_d(my_mpfr_absolute_value, rounding_mode) > 2)
+            break;
+
+        mpc_add(my_z, my_temp, my_c, rounding_mode);
+    }
+
+    mpfr_clear(my_mpfr_absolute_value);
+    mpc_clear(my_c);
+    mpc_clear(my_temp);
+    mpc_clear(my_z);
+
+    if (escape == MAXIMUM_ITERATIONS)
+        escape = 0;
+
+    return escape;
+}
+
+#else
+size_t
 count_escape(complex double c)
 {
     size_t escape = 0;
@@ -89,6 +138,7 @@ count_escape(complex double c)
 
     return escape;
 }
+#endif
 
 static int
 choose_color_for_escape(size_t escape)

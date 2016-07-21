@@ -69,6 +69,15 @@ START_TEST(test_aspect_ratio_in_landscape)
 }
 END_TEST
 
+START_TEST(test_some_known_points)
+{
+    complex double is_in_set = 0.0 + I * 0.0;
+    complex double is_not_in_set = 1.5 + I * 1.5;
+    ck_assert_int_eq(0, count_escape(is_in_set));
+    ck_assert_int_ne(0, count_escape(is_not_in_set));
+}
+END_TEST
+
 TCase
 *mandelbrot_testcase(void)
 {
@@ -77,6 +86,7 @@ TCase
     tcase_add_test(tc, test_complex_plane_coordinates);
     tcase_add_test(tc, test_aspect_ratio_in_portrait);
     tcase_add_test(tc, test_aspect_ratio_in_landscape);
+    tcase_add_test(tc, test_some_known_points);
 
     return tc;
 }
