@@ -1,3 +1,4 @@
+#include <complex.h>
 #include <string.h>
 
 #include <cairo/cairo.h>
