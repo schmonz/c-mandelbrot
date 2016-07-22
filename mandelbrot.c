@@ -11,7 +11,6 @@
 
 #include "mandelbrot.h"
 
-static const char *OUTPUTFILE = "pngelbrot.png";
 static const size_t NUM_COLORS = 5;
 static int rgb_colors[NUM_COLORS][3] = {
     { 255, 255, 255 },
@@ -151,7 +150,7 @@ choose_color(size_t escape, size_t maximum_iterations)
 }
 
 static void
-mandelbrot_cairo(size_t width, size_t height, size_t iterations, complex double center, double range)
+mandelbrot_cairo(const char *outputfile, size_t width, size_t height, size_t iterations, complex double center, double range)
 {
     cairo_surface_t *my_surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height);
     cairo_t *my_cairo = cairo_create(my_surface);
@@ -176,14 +175,14 @@ mandelbrot_cairo(size_t width, size_t height, size_t iterations, complex double 
         }
     }
 
-    cairo_surface_write_to_png(my_surface, OUTPUTFILE);
+    cairo_surface_write_to_png(my_surface, outputfile);
 
     cairo_destroy(my_cairo);
     cairo_surface_destroy(my_surface);
 }
 
 static void
-mandelbrot_gd(size_t width, size_t height, size_t iterations, complex double center, double range)
+mandelbrot_gd(const char *outputfile, size_t width, size_t height, size_t iterations, complex double center, double range)
 {
     gdImagePtr im = gdImageCreate(width, height);
     FILE *pngout;
@@ -203,17 +202,17 @@ mandelbrot_gd(size_t width, size_t height, size_t iterations, complex double cen
         }
     }
 
-    pngout = fopen(OUTPUTFILE, "wb");
+    pngout = fopen(outputfile, "wb");
     gdImagePng(im, pngout);
  
     fclose(pngout);
     gdImageDestroy(im);
 }
 
-void mandelbrot(const char *backend, size_t width, size_t height, size_t iterations, complex double center, double range)
+void mandelbrot(const char *backend, const char *outputfile, size_t width, size_t height, size_t iterations, complex double center, double range)
 {
     if (0 == strcmp("cairo", backend))
-        mandelbrot_cairo(width, height, iterations, center, range);
+        mandelbrot_cairo(outputfile, width, height, iterations, center, range);
     else
-        mandelbrot_gd(width, height, iterations, center, range);
+        mandelbrot_gd(outputfile, width, height, iterations, center, range);
 }
