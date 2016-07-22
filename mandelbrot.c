@@ -1,5 +1,3 @@
-#include <complex.h>
-#include <stdbool.h>
 #include <string.h>
 
 #include <cairo/cairo.h>

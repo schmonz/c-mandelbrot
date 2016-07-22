@@ -1,5 +1,4 @@
 #include <complex.h>
-#include <sys/types.h>
 
 typedef struct extreme_coordinates {
     complex double lower_left;
