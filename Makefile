@@ -11,7 +11,7 @@ CHECK_CFLAGS	:= $(shell pkg-config --cflags check 2>/dev/null)
 CHECK_LIBS	:= $(shell pkg-config --libs check 2>/dev/null)
 GD_CFLAGS	:= $(shell pkg-config --cflags gdlib 2>/dev/null)
 GD_LIBS		:= $(shell pkg-config --libs gdlib 2>/dev/null)
-IMAGEMAGICK_PATH:= $(shell pkg-config --variable=exec_prefix ImageMagick 2>/dev/null)
+IMAGEMAGICK	:= $(shell compare 2>/dev/null | grep ImageMagick)
 
 BUILD_WITH_MPC	?= no
 
@@ -49,7 +49,7 @@ ifeq (, ${GD_LIBS})
 endif
 
 is-imagemagick-installed:
-ifeq (, ${IMAGEMAGICK_PATH})
+ifeq (, ${IMAGEMAGICK})
 	${SILENT}echo "Please install ImageMagick (http://www.imagemagick.org)." && false
 endif
 
