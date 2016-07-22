@@ -4,6 +4,7 @@ THE_LIBRARY	=  mandelbrot.a
 THE_PROGRAM	=  main
 
 CFLAGS		+= -g -O0 -Wall -Werror -Wextra -std=c99
+LIBS		+= -lm
 CAIRO_CFLAGS	:= $(shell pkg-config --cflags cairo 2>/dev/null)
 CAIRO_LIBS	:= $(shell pkg-config --libs cairo 2>/dev/null)
 CHECK_CFLAGS	:= $(shell pkg-config --cflags check 2>/dev/null)
@@ -61,7 +62,7 @@ endif
 .PHONY: all check approval valgrind clean is-cairo-installed is-check-installed is-gd-installed is-mpc-installed
 
 ${THE_TESTS}: is-check-installed ${THE_LIBRARY} check_mandelbrot.c
-	${SILENT}${CC} ${CFLAGS} ${CAIRO_CFLAGS} ${GD_CFLAGS} ${CHECK_CFLAGS} -o ${THE_TESTS} check_mandelbrot.c ${CAIRO_LIBS} ${GD_LIBS} ${MPC_LIBS} ${CHECK_LIBS} ${THE_LIBRARY}
+	${SILENT}${CC} ${CFLAGS} ${CAIRO_CFLAGS} ${GD_CFLAGS} ${CHECK_CFLAGS} -o ${THE_TESTS} check_mandelbrot.c ${THE_LIBRARY} ${LIBS} ${CAIRO_LIBS} ${GD_LIBS} ${MPC_LIBS} ${CHECK_LIBS}
 
 ${THE_LIBRARY}: is-cairo-installed is-gd-installed is-mpc-installed mandelbrot.h mandelbrot.c
 	${SILENT}${CC} ${CFLAGS} ${CAIRO_CFLAGS} ${GD_CFLAGS} ${MPC_CFLAGS} -c mandelbrot.c
@@ -69,4 +70,4 @@ ${THE_LIBRARY}: is-cairo-installed is-gd-installed is-mpc-installed mandelbrot.h
 	${SILENT}ranlib ${THE_LIBRARY}
 
 ${THE_PROGRAM}: ${THE_LIBRARY} mandelbrot.h main.c
-	${SILENT}${CC} ${CFLAGS} -o ${THE_PROGRAM} main.c ${CAIRO_LIBS} ${GD_LIBS} ${MPC_LIBS} ${THE_LIBRARY}
+	${SILENT}${CC} ${CFLAGS} -o ${THE_PROGRAM} main.c ${THE_LIBRARY} ${LIBS} ${CAIRO_LIBS} ${GD_LIBS} ${MPC_LIBS}
