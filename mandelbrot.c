@@ -11,9 +11,8 @@
 
 #include "mandelbrot.h"
 
-static const size_t MAXIMUM_ITERATIONS = 100;
-static const size_t NUM_COLORS = 5;
 static const char *OUTPUTFILE = "pngelbrot.png";
+static const size_t NUM_COLORS = 5;
 static int rgb_colors[NUM_COLORS][3] = {
     { 255, 255, 255 },
     {   0,   0,   0 },
@@ -88,7 +87,7 @@ coords_for_pixel(size_t width, size_t height, complex double center, double rang
 }
 
 size_t
-count_escape(complex double c)
+count_escape(complex double c, size_t maximum_iterations)
 {
     size_t escape = 0;
 
@@ -104,7 +103,7 @@ count_escape(complex double c)
     mpc_set_dc(my_c, c, rounding_mode);
     mpc_set_dc(my_z, 0.0 + I * 0.0, rounding_mode);
 
-    for (; escape < MAXIMUM_ITERATIONS; escape++) {
+    for (; escape < maximum_iterations; escape++) {
         mpc_pow_d(my_temp, my_z, 2.0, rounding_mode);
 
         mpc_abs(my_mpfr_absolute_value, my_temp, rounding_mode);
@@ -122,7 +121,7 @@ count_escape(complex double c)
     complex double z = 0.0 + I * 0.0;
     complex double temp;
 
-    for (; escape < MAXIMUM_ITERATIONS; escape++) {
+    for (; escape < maximum_iterations; escape++) {
         temp = cpow(z, 2);
 
         if (cabs(temp) > 2)
@@ -132,27 +131,27 @@ count_escape(complex double c)
     }
 #endif /* USE_MPC */
 
-    if (escape == MAXIMUM_ITERATIONS)
+    if (escape == maximum_iterations)
         escape = 0;
 
     return escape;
 }
 
 static size_t
-choose_color(size_t escape)
+choose_color(size_t escape, size_t maximum_iterations)
 {
     if (escape == 0)
         return 1;
-    else if (escape <= (MAXIMUM_ITERATIONS / 7))
+    else if (escape <= (maximum_iterations / 7))
         return 2;
-    else if (escape <= (MAXIMUM_ITERATIONS / 5))
+    else if (escape <= (maximum_iterations / 5))
         return 3;
     else
         return 4;
 }
 
 static void
-mandelbrot_cairo(size_t width, size_t height, complex double center, double range)
+mandelbrot_cairo(size_t width, size_t height, size_t iterations, complex double center, double range)
 {
     cairo_surface_t *my_surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height);
     cairo_t *my_cairo = cairo_create(my_surface);
@@ -169,8 +168,8 @@ mandelbrot_cairo(size_t width, size_t height, complex double center, double rang
     cairo_set_line_width(my_cairo, 0.1);
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
-            size_t escape = count_escape(coords_for_pixel(width, height, center, range, i, j));
-            size_t index = choose_color(escape);
+            size_t escape = count_escape(coords_for_pixel(width, height, center, range, i, j), iterations);
+            size_t index = choose_color(escape, iterations);
             cairo_rectangle(my_cairo, i, j, 1, 1);
             cairo_set_source_rgb(my_cairo, colors[index][0], colors[index][1], colors[index][2]);
             cairo_fill(my_cairo);
@@ -184,7 +183,7 @@ mandelbrot_cairo(size_t width, size_t height, complex double center, double rang
 }
 
 static void
-mandelbrot_gd(size_t width, size_t height, complex double center, double range)
+mandelbrot_gd(size_t width, size_t height, size_t iterations, complex double center, double range)
 {
     gdImagePtr im = gdImageCreate(width, height);
     FILE *pngout;
@@ -198,8 +197,8 @@ mandelbrot_gd(size_t width, size_t height, complex double center, double range)
 
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
-            size_t escape = count_escape(coords_for_pixel(width, height, center, range, i, j));
-            size_t index = choose_color(escape);
+            size_t escape = count_escape(coords_for_pixel(width, height, center, range, i, j), iterations);
+            size_t index = choose_color(escape, iterations);
             gdImageSetPixel(im, i, j, colors[index]);
         }
     }
@@ -211,10 +210,10 @@ mandelbrot_gd(size_t width, size_t height, complex double center, double range)
     gdImageDestroy(im);
 }
 
-void mandelbrot(const char *backend, size_t width, size_t height, complex double center, double range)
+void mandelbrot(const char *backend, size_t width, size_t height, size_t iterations, complex double center, double range)
 {
     if (0 == strcmp("cairo", backend))
-        mandelbrot_cairo(width, height, center, range);
+        mandelbrot_cairo(width, height, iterations, center, range);
     else
-        mandelbrot_gd(width, height, center, range);
+        mandelbrot_gd(width, height, iterations, center, range);
 }
