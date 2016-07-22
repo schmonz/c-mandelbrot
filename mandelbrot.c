@@ -23,8 +23,6 @@ static int rgb_colors[NUM_COLORS][3] = {
     { 154, 227, 194 }
 };
 
-int gd_colors[NUM_COLORS];
-
 static void
 color_all_pixels_cairo(cairo_t *cr, double red, double green, double blue)
 {
@@ -142,7 +140,7 @@ count_escape(complex double c)
 }
 
 static size_t
-choose_color_cairo(size_t escape)
+choose_color(size_t escape)
 {
     if (escape == 0)
         return 1;
@@ -154,41 +152,28 @@ choose_color_cairo(size_t escape)
         return 4;
 }
 
-static int
-choose_color_gd(size_t escape)
-{
-    if (escape == 0)
-        return gd_colors[1];
-    else if (escape <= (MAXIMUM_ITERATIONS / 7))
-        return gd_colors[2];
-    else if (escape <= (MAXIMUM_ITERATIONS / 5))
-        return gd_colors[3];
-    else
-        return gd_colors[4];
-}
-
 static void
 mandelbrot_cairo(size_t width, size_t height, complex double center, double range)
 {
     cairo_surface_t *my_surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height);
     cairo_t *my_cairo = cairo_create(my_surface);
-    double cairo_colors[NUM_COLORS][3];
+    double colors[NUM_COLORS][3];
 
     for (size_t i = 0; i < NUM_COLORS; i++) {
         for (size_t j = 0; j < 3; j++) {
-            cairo_colors[i][j] = rgb_colors[i][j] / 255.0;
+            colors[i][j] = rgb_colors[i][j] / 255.0;
         }
     }
 
-    color_all_pixels_cairo(my_cairo, cairo_colors[0][0], cairo_colors[0][1], cairo_colors[0][2]);
+    color_all_pixels_cairo(my_cairo, colors[0][0], colors[0][1], colors[0][2]);
 
     cairo_set_line_width(my_cairo, 0.1);
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
             size_t escape = count_escape(coords_for_pixel(width, height, center, range, i, j));
-            size_t index = choose_color_cairo(escape);
+            size_t index = choose_color(escape);
             cairo_rectangle(my_cairo, i, j, 1, 1);
-            cairo_set_source_rgb(my_cairo, cairo_colors[index][0], cairo_colors[index][1], cairo_colors[index][2]);
+            cairo_set_source_rgb(my_cairo, colors[index][0], colors[index][1], colors[index][2]);
             cairo_fill(my_cairo);
         }
     }
@@ -204,17 +189,19 @@ mandelbrot_gd(size_t width, size_t height, complex double center, double range)
 {
     gdImagePtr im = gdImageCreate(width, height);
     FILE *pngout;
+    int colors[NUM_COLORS];
 
     for (size_t i = 0; i < NUM_COLORS; i++) {
-        gd_colors[i] = gdImageColorAllocate(im, rgb_colors[i][0], rgb_colors[i][1], rgb_colors[i][2]);
+        colors[i] = gdImageColorAllocate(im, rgb_colors[i][0], rgb_colors[i][1], rgb_colors[i][2]);
     }
 
-    color_all_pixels_gd(im, width, height, gd_colors[0]);
+    color_all_pixels_gd(im, width, height, colors[0]);
 
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
             size_t escape = count_escape(coords_for_pixel(width, height, center, range, i, j));
-            gdImageSetPixel(im, i, j, choose_color_gd(escape));
+            size_t index = choose_color(escape);
+            gdImageSetPixel(im, i, j, colors[index]);
         }
     }
 
