@@ -1,5 +1,6 @@
 #include <complex.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include <cairo/cairo.h>
 #include <gd.h>
@@ -166,8 +167,8 @@ choose_color_gd(size_t escape)
         return gd_colors[4];
 }
 
-void
-draw_something_cairo(size_t width, size_t height, complex double center, double range)
+static void
+mandelbrot_cairo(size_t width, size_t height, complex double center, double range)
 {
     cairo_surface_t *my_surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height);
     cairo_t *my_cairo = cairo_create(my_surface);
@@ -198,8 +199,8 @@ draw_something_cairo(size_t width, size_t height, complex double center, double 
     cairo_surface_destroy(my_surface);
 }
 
-void
-draw_something_gd(size_t width, size_t height, complex double center, double range)
+static void
+mandelbrot_gd(size_t width, size_t height, complex double center, double range)
 {
     gdImagePtr im = gdImageCreate(width, height);
     FILE *pngout;
@@ -222,4 +223,12 @@ draw_something_gd(size_t width, size_t height, complex double center, double ran
  
     fclose(pngout);
     gdImageDestroy(im);
+}
+
+void mandelbrot(const char *backend, size_t width, size_t height, complex double center, double range)
+{
+    if (0 == strcmp("cairo", backend))
+        mandelbrot_cairo(width, height, center, range);
+    else
+        mandelbrot_gd(width, height, center, range);
 }
