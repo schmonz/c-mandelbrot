@@ -32,7 +32,7 @@ color_all_pixels_gd(gdImagePtr im, size_t width, size_t height, int color)
 }
 
 static double
-horizontal_pixel_to_x_value(extremes_t extremes, size_t width, int horizontal_pixel)
+horizontal_pixel_to_x_value(extremes_t extremes, size_t width, size_t horizontal_pixel)
 {
     const double minimum_x = creal(extremes.lower_left);
     const double maximum_x = creal(extremes.upper_right);
@@ -42,7 +42,7 @@ horizontal_pixel_to_x_value(extremes_t extremes, size_t width, int horizontal_pi
 }
 
 static double
-vertical_pixel_to_y_value(extremes_t extremes, size_t height, int vertical_pixel)
+vertical_pixel_to_y_value(extremes_t extremes, size_t height, size_t vertical_pixel)
 {
     const double minimum_y = cimag(extremes.lower_left);
     const double maximum_y = cimag(extremes.upper_right);
