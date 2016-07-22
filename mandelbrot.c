@@ -9,9 +9,8 @@
 
 #include "mandelbrot.h"
 
-static const size_t NUM_COLORS = 5;
+static const size_t NUM_COLORS = 4;
 static int rgb_colors[NUM_COLORS][3] = {
-    { 255, 255, 255 },
     {   0,   0,   0 },
     { 176, 229, 247 },
     { 245, 137, 169 },
@@ -133,13 +132,13 @@ choose_escape_color(complex double c, size_t maximum_iterations)
         escape = 0;
 
     if (escape == 0)
-        return 1;
+        return 0;
     else if (escape <= (maximum_iterations / 7))
-        return 2;
+        return 1;
     else if (escape <= (maximum_iterations / 5))
-        return 3;
+        return 2;
     else
-        return 4;
+        return 3;
 
     return escape;
 }
