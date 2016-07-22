@@ -19,16 +19,17 @@ static int rgb_colors[NUM_COLORS][3] = {
 };
 
 static void
-color_all_pixels_cairo(cairo_t *cr, double red, double green, double blue)
+set_pixel_cairo(cairo_t *cr, size_t horizontal_pixel, size_t vertical_pixel, double color[])
 {
-    cairo_set_source_rgb(cr, red, green, blue);
-    cairo_paint(cr);
+    cairo_rectangle(cr, horizontal_pixel, vertical_pixel, 1, 1);
+    cairo_set_source_rgb(cr, color[0], color[1], color[2]);
+    cairo_fill(cr);
 }
 
 static void
-color_all_pixels_gd(gdImagePtr im, size_t width, size_t height, int color)
+set_pixel_gd(gdImagePtr im, size_t horizontal_pixel, size_t vertical_pixel, int color)
 {
-    gdImageFilledRectangle(im, 0, 0, width - 1, height - 1, color);
+    gdImageSetPixel(im, horizontal_pixel, vertical_pixel, color);
 }
 
 static double
@@ -154,22 +155,16 @@ mandelbrot_cairo(const char *outputfile, size_t width, size_t height, size_t ite
     cairo_t *my_cairo = cairo_create(my_surface);
     double colors[NUM_COLORS][3];
 
-    for (size_t i = 0; i < NUM_COLORS; i++) {
-        for (size_t j = 0; j < 3; j++) {
+    for (size_t i = 0; i < NUM_COLORS; i++)
+        for (size_t j = 0; j < 3; j++)
             colors[i][j] = rgb_colors[i][j] / 255.0;
-        }
-    }
-
-    color_all_pixels_cairo(my_cairo, colors[0][0], colors[0][1], colors[0][2]);
 
     cairo_set_line_width(my_cairo, 0.1);
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
             size_t escape = count_escape(coords_for_pixel(width, height, center, range, i, j), iterations);
             size_t index = choose_color(escape, iterations);
-            cairo_rectangle(my_cairo, i, j, 1, 1);
-            cairo_set_source_rgb(my_cairo, colors[index][0], colors[index][1], colors[index][2]);
-            cairo_fill(my_cairo);
+            set_pixel_cairo(my_cairo, i, j, colors[index]);
         }
     }
 
@@ -186,17 +181,14 @@ mandelbrot_gd(const char *outputfile, size_t width, size_t height, size_t iterat
     FILE *pngout;
     int colors[NUM_COLORS];
 
-    for (size_t i = 0; i < NUM_COLORS; i++) {
+    for (size_t i = 0; i < NUM_COLORS; i++)
         colors[i] = gdImageColorAllocate(im, rgb_colors[i][0], rgb_colors[i][1], rgb_colors[i][2]);
-    }
-
-    color_all_pixels_gd(im, width, height, colors[0]);
 
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
             size_t escape = count_escape(coords_for_pixel(width, height, center, range, i, j), iterations);
             size_t index = choose_color(escape, iterations);
-            gdImageSetPixel(im, i, j, colors[index]);
+            set_pixel_gd(im, i, j, colors[index]);
         }
     }
 
