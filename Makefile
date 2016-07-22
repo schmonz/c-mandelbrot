@@ -4,13 +4,13 @@ THE_LIBRARY	=  mandelbrot.a
 THE_PROGRAM	=  main
 
 CFLAGS		+= -g -O0 -Wall -Werror -Wextra -std=c99
-CAIRO_CFLAGS	:= $(shell pkg-config --cflags cairo)
-CAIRO_LIBS	:= $(shell pkg-config --libs cairo)
-CHECK_CFLAGS	:= $(shell pkg-config --cflags check)
-CHECK_LIBS	:= $(shell pkg-config --libs check)
-GD_CFLAGS	:= $(shell pkg-config --cflags gdlib)
-GD_LIBS		:= $(shell pkg-config --libs gdlib)
-IMAGEMAGICK_PATH:= $(shell pkg-config --variable=exec_prefix ImageMagick)
+CAIRO_CFLAGS	:= $(shell pkg-config --cflags cairo 2>/dev/null)
+CAIRO_LIBS	:= $(shell pkg-config --libs cairo 2>/dev/null)
+CHECK_CFLAGS	:= $(shell pkg-config --cflags check 2>/dev/null)
+CHECK_LIBS	:= $(shell pkg-config --libs check 2>/dev/null)
+GD_CFLAGS	:= $(shell pkg-config --cflags gdlib 2>/dev/null)
+GD_LIBS		:= $(shell pkg-config --libs gdlib 2>/dev/null)
+IMAGEMAGICK_PATH:= $(shell pkg-config --variable=exec_prefix ImageMagick 2>/dev/null)
 
 BUILD_WITH_MPC	?= no
 
