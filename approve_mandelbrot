@@ -1,3 +1,4 @@
 #!/bin/sh
 
+git config --local diff.image.command '`pwd`/diff-image'
 exit $(git diff -- "$1")
