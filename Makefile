@@ -4,6 +4,8 @@ THE_LIBRARY	=  mandelbrot.a
 THE_PROGRAM	=  main
 
 CFLAGS		+= -g -O0 -Wall -Werror -Wextra -std=c99
+CAIRO_CFLAGS	:= $(shell pkg-config --cflags cairo)
+CAIRO_LIBS	:= $(shell pkg-config --libs cairo)
 GD_CFLAGS	:= $(shell pkg-config --cflags gdlib)
 GD_LIBS		:= $(shell pkg-config --libs gdlib)
 CHECK_CFLAGS	:= $(shell pkg-config --cflags check)
@@ -29,6 +31,11 @@ clean:
 	${SILENT}rm -f *.o ${THE_TESTS} ${THE_LIBRARY} ${THE_PROGRAM}
 	${SILENT}rm -rf *.dSYM
 
+is-cairo-installed:
+ifeq (, ${CAIRO_LIBS})
+	${SILENT}echo "Please install Cairo (https://www.cairographics.org)." && false
+endif
+
 is-check-installed:
 ifeq (, ${CHECK_LIBS})
 	${SILENT}echo "Please install Check (https://libcheck.github.io/check/)." && false
@@ -45,15 +52,15 @@ MPC_CFLAGS	=  -DUSE_MPC ${GD_CFLAGS}
 MPC_LIBS	=  -lmpc -lmpfr -lgmp
 endif
 
-.PHONY: all check approval valgrind clean is-check-installed is-gd-installed is-mpc-installed
+.PHONY: all check approval valgrind clean is-cairo-installed is-check-installed is-gd-installed is-mpc-installed
 
 ${THE_TESTS}: is-check-installed ${THE_LIBRARY} check_mandelbrot.c
-	${SILENT}${CC} ${CFLAGS} ${GD_CFLAGS} ${CHECK_CFLAGS} -o ${THE_TESTS} check_mandelbrot.c ${GD_LIBS} ${MPC_LIBS} ${CHECK_LIBS} ${THE_LIBRARY}
+	${SILENT}${CC} ${CFLAGS} ${CAIRO_CFLAGS} ${GD_CFLAGS} ${CHECK_CFLAGS} -o ${THE_TESTS} check_mandelbrot.c ${CAIRO_LIBS} ${GD_LIBS} ${MPC_LIBS} ${CHECK_LIBS} ${THE_LIBRARY}
 
-${THE_LIBRARY}: is-gd-installed is-mpc-installed mandelbrot.h mandelbrot.c
-	${SILENT}${CC} ${CFLAGS} ${GD_CFLAGS} ${MPC_CFLAGS} -c mandelbrot.c
+${THE_LIBRARY}: is-cairo-installed is-gd-installed is-mpc-installed mandelbrot.h mandelbrot.c
+	${SILENT}${CC} ${CFLAGS} ${CAIRO_CFLAGS} ${GD_CFLAGS} ${MPC_CFLAGS} -c mandelbrot.c
 	${SILENT}ar rc ${THE_LIBRARY} mandelbrot.o
 	${SILENT}ranlib ${THE_LIBRARY}
 
 ${THE_PROGRAM}: ${THE_LIBRARY} mandelbrot.h main.c
-	${SILENT}${CC} ${CFLAGS} -o ${THE_PROGRAM} main.c ${GD_LIBS} ${MPC_LIBS} ${THE_LIBRARY}
+	${SILENT}${CC} ${CFLAGS} -o ${THE_PROGRAM} main.c ${CAIRO_LIBS} ${GD_LIBS} ${MPC_LIBS} ${THE_LIBRARY}

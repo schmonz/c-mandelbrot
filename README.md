@@ -12,11 +12,9 @@ Now I'm drawing it in C:
 
 ## TODO
 
-7. Use [higher-precision math](https://gmplib.org),
-   and compare before/after on sufficiently zoomed-in images.
-7. Try another graphics library
-   ([Cairo](https://www.cairographics.org/FAQ/#minimal_C_program)?
-   [AA-lib](http://aa-project.sourceforge.net/aalib/)?).
+7. Remove duplication from supporting multiple graphics libraries.
+7. Determine whether arbitrary-precision complex math can be made faster.
+7. Determine when arbitrary-precision complex math is worth doing.
 7. Use GNU Automake, Autoconf, Libtool.
 7. If iterating over every pixel is slow, try:
     - parallelizing computation in multiple threads (with OpenMP or similar)
