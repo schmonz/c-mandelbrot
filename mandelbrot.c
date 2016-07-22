@@ -151,27 +151,27 @@ choose_color(size_t escape, size_t maximum_iterations)
 static void
 mandelbrot_cairo(const char *outputfile, size_t width, size_t height, size_t iterations, complex double center, double range)
 {
-    cairo_surface_t *my_surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height);
-    cairo_t *my_cairo = cairo_create(my_surface);
+    cairo_surface_t *target = cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height);
+    cairo_t *cr = cairo_create(target);
+    cairo_set_line_width(cr, 0.1);
     double colors[NUM_COLORS][3];
 
     for (size_t i = 0; i < NUM_COLORS; i++)
         for (size_t j = 0; j < 3; j++)
             colors[i][j] = rgb_colors[i][j] / 255.0;
 
-    cairo_set_line_width(my_cairo, 0.1);
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
             size_t escape = count_escape(coords_for_pixel(width, height, center, range, i, j), iterations);
             size_t index = choose_color(escape, iterations);
-            set_pixel_cairo(my_cairo, i, j, colors[index]);
+            set_pixel_cairo(cr, i, j, colors[index]);
         }
     }
 
-    cairo_surface_write_to_png(my_surface, outputfile);
+    cairo_surface_write_to_png(target, outputfile);
 
-    cairo_destroy(my_cairo);
-    cairo_surface_destroy(my_surface);
+    cairo_destroy(cr);
+    cairo_surface_destroy(target);
 }
 
 static void
