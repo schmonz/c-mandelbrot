@@ -71,7 +71,7 @@ END_TEST
 
 START_TEST(test_some_known_points)
 {
-    size_t iterations = 100;
+    size_t iterations = 2;
     complex double is_in_set = 0.0 + I * 0.0;
     complex double is_not_in_set = 1.5 + I * 1.5;
     ck_assert_int_eq(0, choose_escape_color(is_in_set, iterations));
