@@ -171,8 +171,7 @@ mandelbrot_cairo(const char *outputfile, size_t width, size_t height, size_t ite
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
             complex double coords = coords_for_pixel(width, height, center, range, i, j);
-            size_t index = choose_escape_color(coords, iterations);
-            set_pixel_cairo(cr, i, j, colors[index]);
+            set_pixel_cairo(cr, i, j, colors[choose_escape_color(coords, iterations)]);
         }
     }
 
@@ -194,8 +193,7 @@ mandelbrot_gd(const char *outputfile, size_t width, size_t height, size_t iterat
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
             complex double coords = coords_for_pixel(width, height, center, range, i, j);
-            size_t index = choose_escape_color(coords, iterations);
-            set_pixel_gd(im, i, j, colors[index]);
+            set_pixel_gd(im, i, j, colors[choose_escape_color(coords, iterations)]);
         }
     }
 
