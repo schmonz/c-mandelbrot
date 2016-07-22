@@ -10,7 +10,7 @@
 
 #include "mandelbrot.h"
 
-static const size_t NUM_COLORS = 4;
+#define NUM_COLORS 4
 static const int rgb_colors[NUM_COLORS][3] = {
     {   0,   0,   0 },
     { 176, 229, 247 },
