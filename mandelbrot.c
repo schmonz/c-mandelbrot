@@ -11,10 +11,9 @@
 
 #include "mandelbrot.h"
 
-const size_t MAXIMUM_ITERATIONS = 100;
-const size_t NUM_COLORS = 5;
-const char *OUTPUTFILE = "pngelbrot.png";
-
+static const size_t MAXIMUM_ITERATIONS = 100;
+static const size_t NUM_COLORS = 5;
+static const char *OUTPUTFILE = "pngelbrot.png";
 static int rgb_colors[NUM_COLORS][3] = {
     { 255, 255, 255 },
     {   0,   0,   0 },
