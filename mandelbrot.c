@@ -10,7 +10,7 @@
 #include "mandelbrot.h"
 
 static const size_t NUM_COLORS = 4;
-static int rgb_colors[NUM_COLORS][3] = {
+static const int rgb_colors[NUM_COLORS][3] = {
     {   0,   0,   0 },
     { 176, 229, 247 },
     { 245, 137, 169 },
@@ -33,7 +33,7 @@ populate_colors_gd(gdImagePtr im, int colors[NUM_COLORS])
 }
 
 static void
-set_pixel_cairo(cairo_t *cr, size_t horizontal_pixel, size_t vertical_pixel, double color[])
+set_pixel_cairo(cairo_t *cr, const size_t horizontal_pixel, const size_t vertical_pixel, const double color[])
 {
     cairo_rectangle(cr, horizontal_pixel, vertical_pixel, 1, 1);
     cairo_set_source_rgb(cr, color[0], color[1], color[2]);
@@ -41,13 +41,13 @@ set_pixel_cairo(cairo_t *cr, size_t horizontal_pixel, size_t vertical_pixel, dou
 }
 
 static void
-set_pixel_gd(gdImagePtr im, size_t horizontal_pixel, size_t vertical_pixel, int color)
+set_pixel_gd(gdImagePtr im, const size_t horizontal_pixel, const size_t vertical_pixel, const int color)
 {
     gdImageSetPixel(im, horizontal_pixel, vertical_pixel, color);
 }
 
 static double
-horizontal_pixel_to_x_value(extremes_t extremes, size_t width, size_t horizontal_pixel)
+horizontal_pixel_to_x_value(const extremes_t extremes, const size_t width, const size_t horizontal_pixel)
 {
     const double minimum_x = creal(extremes.lower_left);
     const double maximum_x = creal(extremes.upper_right);
@@ -57,7 +57,7 @@ horizontal_pixel_to_x_value(extremes_t extremes, size_t width, size_t horizontal
 }
 
 static double
-vertical_pixel_to_y_value(extremes_t extremes, size_t height, size_t vertical_pixel)
+vertical_pixel_to_y_value(const extremes_t extremes, const size_t height, const size_t vertical_pixel)
 {
     const double minimum_y = cimag(extremes.lower_left);
     const double maximum_y = cimag(extremes.upper_right);
@@ -67,7 +67,7 @@ vertical_pixel_to_y_value(extremes_t extremes, size_t height, size_t vertical_pi
 }
 
 extremes_t
-get_extreme_coordinates(size_t width, size_t height, complex double center, double range)
+get_extreme_coordinates(const size_t width, const size_t height, const complex double center, const double range)
 {
     extremes_t coords;
 
@@ -91,7 +91,7 @@ get_extreme_coordinates(size_t width, size_t height, complex double center, doub
 }
 
 complex double
-coords_for_pixel(size_t width, size_t height, complex double center, double range, size_t i, size_t j)
+coords_for_pixel(const size_t width, const size_t height, const complex double center, const double range, const size_t i, const size_t j)
 {
     extremes_t extremes = get_extreme_coordinates(width, height, center, range);
     return horizontal_pixel_to_x_value(extremes, width, i)
@@ -99,7 +99,7 @@ coords_for_pixel(size_t width, size_t height, complex double center, double rang
 }
 
 size_t
-choose_escape_color(complex double c, size_t maximum_iterations)
+choose_escape_color(const complex double c, const size_t maximum_iterations)
 {
     size_t escape = 0;
 
@@ -159,7 +159,7 @@ choose_escape_color(complex double c, size_t maximum_iterations)
 }
 
 static void
-mandelbrot_cairo(const char *outputfile, size_t width, size_t height, size_t iterations, complex double center, double range)
+mandelbrot_cairo(const char *outputfile, const size_t width, const size_t height, const size_t iterations, const complex double center, const double range)
 {
     cairo_surface_t *target = cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height);
     cairo_t *cr = cairo_create(target);
@@ -182,7 +182,7 @@ mandelbrot_cairo(const char *outputfile, size_t width, size_t height, size_t ite
 }
 
 static void
-mandelbrot_gd(const char *outputfile, size_t width, size_t height, size_t iterations, complex double center, double range)
+mandelbrot_gd(const char *outputfile, const size_t width, const size_t height, const size_t iterations, const complex double center, const double range)
 {
     gdImagePtr im = gdImageCreate(width, height);
     FILE *pngout;
@@ -204,7 +204,7 @@ mandelbrot_gd(const char *outputfile, size_t width, size_t height, size_t iterat
     gdImageDestroy(im);
 }
 
-void mandelbrot(const char *backend, const char *outputfile, size_t width, size_t height, size_t iterations, complex double center, double range)
+void mandelbrot(const char *backend, const char *outputfile, const size_t width, const size_t height, const size_t iterations, const complex double center, const double range)
 {
     if (0 == strcmp("cairo", backend))
         mandelbrot_cairo(outputfile, width, height, iterations, center, range);
