@@ -1,0 +1,5 @@
+#!/bin/sh
+
+num_changed_pixels=$(compare $2 $1 -metric ae -compose src /dev/null 2>&1)
+echo ${num_changed_pixels}
+exit 0;

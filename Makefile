@@ -6,10 +6,11 @@ THE_PROGRAM	=  main
 CFLAGS		+= -g -O0 -Wall -Werror -Wextra -std=c99
 CAIRO_CFLAGS	:= $(shell pkg-config --cflags cairo)
 CAIRO_LIBS	:= $(shell pkg-config --libs cairo)
-GD_CFLAGS	:= $(shell pkg-config --cflags gdlib)
-GD_LIBS		:= $(shell pkg-config --libs gdlib)
 CHECK_CFLAGS	:= $(shell pkg-config --cflags check)
 CHECK_LIBS	:= $(shell pkg-config --libs check)
+GD_CFLAGS	:= $(shell pkg-config --cflags gdlib)
+GD_LIBS		:= $(shell pkg-config --libs gdlib)
+IMAGEMAGICK_PATH:= $(shell pkg-config --variable=exec_prefix ImageMagick)
 
 BUILD_WITH_MPC	?= no
 
@@ -20,7 +21,7 @@ all: check approval
 check: ${THE_TESTS}
 	${SILENT}./${THE_TESTS}
 
-approval: ${THE_PROGRAM}
+approval: is-imagemagick-installed ${THE_PROGRAM}
 	${SILENT}./${THE_PROGRAM} gd pngelbrot.png 800 500 100 0.0 0.0 4.0
 	${SILENT}./${APPROVAL_TESTS} pngelbrot.png
 
@@ -44,6 +45,11 @@ endif
 is-gd-installed:
 ifeq (, ${GD_LIBS})
 	${SILENT}echo "Please install GD (http://libgd.github.io)." && false
+endif
+
+is-imagemagick-installed:
+ifeq (, ${IMAGEMAGICK_PATH})
+	${SILENT}echo "Please install ImageMagick (http://www.imagemagick.org)." && false
 endif
 
 is-mpc-installed:
