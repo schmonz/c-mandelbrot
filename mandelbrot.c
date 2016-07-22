@@ -85,7 +85,7 @@ coords_for_pixel(size_t width, size_t height, complex double center, double rang
 }
 
 size_t
-count_escape(complex double c, size_t maximum_iterations)
+choose_escape_color(complex double c, size_t maximum_iterations)
 {
     size_t escape = 0;
 
@@ -132,12 +132,6 @@ count_escape(complex double c, size_t maximum_iterations)
     if (escape == maximum_iterations)
         escape = 0;
 
-    return escape;
-}
-
-static size_t
-choose_color(size_t escape, size_t maximum_iterations)
-{
     if (escape == 0)
         return 1;
     else if (escape <= (maximum_iterations / 7))
@@ -146,6 +140,8 @@ choose_color(size_t escape, size_t maximum_iterations)
         return 3;
     else
         return 4;
+
+    return escape;
 }
 
 static void
@@ -162,8 +158,8 @@ mandelbrot_cairo(const char *outputfile, size_t width, size_t height, size_t ite
 
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
-            size_t escape = count_escape(coords_for_pixel(width, height, center, range, i, j), iterations);
-            size_t index = choose_color(escape, iterations);
+            complex double coords = coords_for_pixel(width, height, center, range, i, j);
+            size_t index = choose_escape_color(coords, iterations);
             set_pixel_cairo(cr, i, j, colors[index]);
         }
     }
@@ -186,8 +182,8 @@ mandelbrot_gd(const char *outputfile, size_t width, size_t height, size_t iterat
 
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
-            size_t escape = count_escape(coords_for_pixel(width, height, center, range, i, j), iterations);
-            size_t index = choose_color(escape, iterations);
+            complex double coords = coords_for_pixel(width, height, center, range, i, j);
+            size_t index = choose_escape_color(coords, iterations);
             set_pixel_gd(im, i, j, colors[index]);
         }
     }
