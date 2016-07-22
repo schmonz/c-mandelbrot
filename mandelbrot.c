@@ -18,6 +18,21 @@ static int rgb_colors[NUM_COLORS][3] = {
 };
 
 static void
+populate_colors_cairo(double colors[NUM_COLORS][3])
+{
+    for (size_t i = 0; i < NUM_COLORS; i++)
+        for (size_t j = 0; j < 3; j++)
+            colors[i][j] = rgb_colors[i][j] / 255.0;
+}
+
+static void
+populate_colors_gd(gdImagePtr im, int colors[NUM_COLORS])
+{
+    for (size_t i = 0; i < NUM_COLORS; i++)
+        colors[i] = gdImageColorAllocate(im, rgb_colors[i][0], rgb_colors[i][1], rgb_colors[i][2]);
+}
+
+static void
 set_pixel_cairo(cairo_t *cr, size_t horizontal_pixel, size_t vertical_pixel, double color[])
 {
     cairo_rectangle(cr, horizontal_pixel, vertical_pixel, 1, 1);
@@ -151,9 +166,7 @@ mandelbrot_cairo(const char *outputfile, size_t width, size_t height, size_t ite
     cairo_set_line_width(cr, 0.1);
     double colors[NUM_COLORS][3];
 
-    for (size_t i = 0; i < NUM_COLORS; i++)
-        for (size_t j = 0; j < 3; j++)
-            colors[i][j] = rgb_colors[i][j] / 255.0;
+    populate_colors_cairo(colors);
 
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
@@ -176,8 +189,7 @@ mandelbrot_gd(const char *outputfile, size_t width, size_t height, size_t iterat
     FILE *pngout;
     int colors[NUM_COLORS];
 
-    for (size_t i = 0; i < NUM_COLORS; i++)
-        colors[i] = gdImageColorAllocate(im, rgb_colors[i][0], rgb_colors[i][1], rgb_colors[i][2]);
+    populate_colors_gd(im, colors);
 
     for (size_t i = 0; i < width; i++) {
         for (size_t j = 0; j < height; j++) {
