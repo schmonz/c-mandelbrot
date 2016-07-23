@@ -12,7 +12,7 @@ Now I'm drawing it in C:
 
 ## TODO
 
-7. Remove duplication from supporting multiple graphics libraries.
+7. Choose colormap size at runtime.
 7. Determine whether arbitrary-precision complex math can be made faster.
 7. Determine when arbitrary-precision complex math is worth doing.
 7. Use GNU Automake, Autoconf, Libtool.
