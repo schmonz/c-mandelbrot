@@ -7,6 +7,17 @@
 #include "graph.h"
 #include "mandelbrot.h"
 
+START_TEST(test_some_known_points)
+{
+    size_t iterations = 2;
+    complex double is_in_set = 0.0 + I * 0.0;
+    complex double is_not_in_set = 1.5 + I * 1.5;
+
+    ck_assert_int_eq(0, choose_escape_color(is_in_set, iterations));
+    ck_assert_int_ne(0, choose_escape_color(is_not_in_set, iterations));
+}
+END_TEST
+
 static void
 assert_doubles_equal(double a, double b)
 {
@@ -28,7 +39,7 @@ assert_complex_points_equal(complex double expected, complex double actual)
     assert_doubles_equal(creal(expected), creal(actual));
     assert_doubles_equal(cimag(expected), cimag(actual));
 }
-    
+
 START_TEST(test_complex_plane_coordinates)
 {
     const int width = 800, height = width;
@@ -73,26 +84,24 @@ START_TEST(test_aspect_ratio_in_landscape)
 }
 END_TEST
 
-START_TEST(test_some_known_points)
+TCase
+*mandelbrot_algorithm(void)
 {
-    size_t iterations = 2;
-    complex double is_in_set = 0.0 + I * 0.0;
-    complex double is_not_in_set = 1.5 + I * 1.5;
+    TCase *tc = tcase_create("Mandelbrot Algorithm");
 
-    ck_assert_int_eq(0, choose_escape_color(is_in_set, iterations));
-    ck_assert_int_ne(0, choose_escape_color(is_not_in_set, iterations));
+    tcase_add_test(tc, test_some_known_points);
+
+    return tc;
 }
-END_TEST
 
 TCase
-*mandelbrot_testcase(void)
+*complex_plane(void)
 {
-    TCase *tc = tcase_create("Mandelbrot Test Case");
+    TCase *tc = tcase_create("Complex Plane");
 
     tcase_add_test(tc, test_complex_plane_coordinates);
     tcase_add_test(tc, test_aspect_ratio_in_portrait);
     tcase_add_test(tc, test_aspect_ratio_in_landscape);
-    tcase_add_test(tc, test_some_known_points);
 
     return tc;
 }
@@ -102,7 +111,8 @@ Suite
 {
     Suite *s = suite_create("Mandelbrot Suite");
 
-    suite_add_tcase(s, mandelbrot_testcase());
+    suite_add_tcase(s, mandelbrot_algorithm());
+    suite_add_tcase(s, complex_plane());
 
     return s;
 }
