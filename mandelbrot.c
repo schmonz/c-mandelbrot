@@ -10,95 +10,6 @@
 
 #include "mandelbrot.h"
 
-#define NUM_COLORS 4
-static const int rgb_colors[NUM_COLORS][3] = {
-    {   0,   0,   0 },
-    { 176, 229, 247 },
-    { 245, 137, 169 },
-    { 154, 227, 194 }
-};
-
-static void
-populate_colors_cairo(double colors[NUM_COLORS][3])
-{
-    for (size_t i = 0; i < NUM_COLORS; i++)
-        for (size_t j = 0; j < 3; j++)
-            colors[i][j] = rgb_colors[i][j] / 255.0;
-}
-
-static void
-populate_colors_gd(gdImagePtr im, int colors[NUM_COLORS])
-{
-    for (size_t i = 0; i < NUM_COLORS; i++)
-        colors[i] = gdImageColorAllocate(im, rgb_colors[i][0], rgb_colors[i][1], rgb_colors[i][2]);
-}
-
-static void
-set_pixel_cairo(cairo_t *cr, const size_t horizontal_pixel, const size_t vertical_pixel, const double color[])
-{
-    cairo_rectangle(cr, horizontal_pixel, vertical_pixel, 1, 1);
-    cairo_set_source_rgb(cr, color[0], color[1], color[2]);
-    cairo_fill(cr);
-}
-
-static void
-set_pixel_gd(gdImagePtr im, const size_t horizontal_pixel, const size_t vertical_pixel, const int color)
-{
-    gdImageSetPixel(im, horizontal_pixel, vertical_pixel, color);
-}
-
-static double
-horizontal_pixel_to_x_value(const extremes_t extremes, const size_t width, const size_t horizontal_pixel)
-{
-    const double minimum_x = creal(extremes.lower_left);
-    const double maximum_x = creal(extremes.upper_right);
-
-    return minimum_x
-        + horizontal_pixel / (width / (maximum_x - minimum_x));
-}
-
-static double
-vertical_pixel_to_y_value(const extremes_t extremes, const size_t height, const size_t vertical_pixel)
-{
-    const double minimum_y = cimag(extremes.lower_left);
-    const double maximum_y = cimag(extremes.upper_right);
-
-    return minimum_y
-        + vertical_pixel / (height / (maximum_y - minimum_y));
-}
-
-extremes_t
-get_extreme_coordinates(const size_t width, const size_t height, const complex double center, const double range)
-{
-    extremes_t coords;
-
-    if (width < height) {
-        coords.lower_left = creal(center) - (range * width/height) / 2.0
-            + I * cimag(center)
-            - I * (range) / 2.0;
-        coords.upper_right = creal(center) + (range * width/height) / 2.0
-            + I * cimag(center)
-            + I * (range) / 2.0;
-    } else {
-        coords.lower_left = creal(center) - (range) / 2.0
-            + I * cimag(center)
-            - I * (range * height/width) / 2.0;
-        coords.upper_right = creal(center) + (range) / 2.0
-            + I * cimag(center)
-            + I * (range * height/width) / 2.0;
-    }
-
-    return coords;
-}
-
-complex double
-coords_for_pixel(const size_t width, const size_t height, const complex double center, const double range, const size_t i, const size_t j)
-{
-    extremes_t extremes = get_extreme_coordinates(width, height, center, range);
-    return horizontal_pixel_to_x_value(extremes, width, i)
-        + I * vertical_pixel_to_y_value(extremes, height, j);
-}
-
 size_t
 choose_escape_color(const complex double c, const size_t maximum_iterations)
 {
@@ -110,7 +21,8 @@ choose_escape_color(const complex double c, const size_t maximum_iterations)
 
     mpc_t my_z, my_temp, my_c;
     mpfr_t my_mpfr_absolute_value;
-    mpc_init2(my_z, precision), mpc_init2(my_temp, precision), mpc_init2(my_c, precision);
+    mpc_init2(my_z, precision), mpc_init2(my_temp, precision),
+        mpc_init2(my_c, precision);
     mpfr_init2(my_mpfr_absolute_value, precision);
 
     mpc_set_dc(my_c, c, rounding_mode);
@@ -159,56 +71,177 @@ choose_escape_color(const complex double c, const size_t maximum_iterations)
     return escape;
 }
 
-static void
-mandelbrot_cairo(const char *outputfile, const size_t width, const size_t height, const size_t iterations, const complex double center, const double range)
+graph_t
+graph_create(const char *backend, const size_t width, const size_t height,
+        const complex double center, const double range)
 {
-    cairo_surface_t *target = cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height);
-    cairo_t *cr = cairo_create(target);
-    cairo_set_line_width(cr, 0.1);
-    double colors[NUM_COLORS][3];
+    graph_t image = {
+        0,
+        { NULL },
+        width,
+        height,
+        center,
+        range,
+        get_extreme_coordinates(width, height, center, range),
+        {
+            {   0,   0,   0 },
+            { 176, 229, 247 },
+            { 245, 137, 169 },
+            { 154, 227, 194 },
+        },
+    };
 
-    populate_colors_cairo(colors);
+    if (0 == strcmp("cairo", backend)) {
+        image.image_type = CAIRO;
 
-    for (size_t i = 0; i < width; i++) {
-        for (size_t j = 0; j < height; j++) {
-            complex double coords = coords_for_pixel(width, height, center, range, i, j);
-            set_pixel_cairo(cr, i, j, colors[choose_escape_color(coords, iterations)]);
+        image.cairo_image = cairo_create(
+                cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height));
+
+        cairo_set_line_width(image.cairo_image, 0.1);
+    } else {
+        image.image_type = GD;
+
+        image.gd_image = gdImageCreate(width, height);
+
+        for (size_t i = 0; i < NUM_COLORS; i++) {
+            gdImageColorAllocate(image.gd_image,
+                    image.colormap[i][0],
+                    image.colormap[i][1],
+                    image.colormap[i][2]);
         }
     }
 
-    cairo_surface_write_to_png(target, outputfile);
+    return image;
+}
 
-    cairo_destroy(cr);
-    cairo_surface_destroy(target);
+extremes_t
+get_extreme_coordinates(const size_t width, const size_t height,
+    const complex double center, const double range)
+{
+    extremes_t coords;
+
+    if (width < height) {
+        coords.lower_left =
+            creal(center) - (range * width/height) / 2.0
+            + I * cimag(center)
+            - I * (range) / 2.0;
+        coords.upper_right =
+            creal(center) + (range * width/height) / 2.0
+            + I * cimag(center)
+            + I * (range) / 2.0;
+    } else {
+        coords.lower_left =
+            creal(center) - (range) / 2.0
+            + I * cimag(center)
+            - I * (range * height/width) / 2.0;
+        coords.upper_right =
+            creal(center) + (range) / 2.0
+            + I * cimag(center)
+            + I * (range * height/width) / 2.0;
+    }
+
+    return coords;
+}
+
+static double
+graph_get_a(const graph_t graph, const size_t horizontal)
+{
+    const double minimum_a = creal(graph.extremes.lower_left);
+    const double maximum_a = creal(graph.extremes.upper_right);
+
+    return minimum_a
+        + horizontal / (graph.width / (maximum_a - minimum_a));
+}
+
+static double
+graph_get_b(const graph_t graph, const size_t vertical)
+{
+    const double minimum_b = cimag(graph.extremes.lower_left);
+    const double maximum_b = cimag(graph.extremes.upper_right);
+
+    return minimum_b
+        + vertical / (graph.height / (maximum_b - minimum_b));
+}
+
+complex double
+graph_get_coordinates(const graph_t graph, const size_t i, const size_t j)
+{
+    return graph_get_a(graph, i) + I * graph_get_b(graph, j);
 }
 
 static void
-mandelbrot_gd(const char *outputfile, const size_t width, const size_t height, const size_t iterations, const complex double center, const double range)
+graph_set_pixel(const graph_t graph,
+        const size_t horizontal, const size_t vertical,
+        const size_t colormap_entry)
 {
-    gdImagePtr im = gdImageCreate(width, height);
+    switch (graph.image_type) {
+        case CAIRO:
+            cairo_rectangle(graph.cairo_image, horizontal, vertical, 1, 1);
+            cairo_set_source_rgb(graph.cairo_image,
+                    graph.colormap[colormap_entry][0] / 255.0,
+                    graph.colormap[colormap_entry][1] / 255.0,
+                    graph.colormap[colormap_entry][2] / 255.0);
+            cairo_fill(graph.cairo_image);
+            break;
+        case GD:
+            gdImageSetPixel(graph.gd_image, horizontal, vertical,
+                    colormap_entry);
+            break;
+        default:
+            break;
+    }
+}
+
+static void
+graph_write(const graph_t graph, const char *outputfile)
+{
     FILE *pngout;
-    int colors[NUM_COLORS];
 
-    populate_colors_gd(im, colors);
+    switch (graph.image_type) {
+        case CAIRO:
+            cairo_surface_write_to_png(cairo_get_target(graph.cairo_image),
+                    outputfile);
+            break;
+        case GD:
+            pngout = fopen(outputfile, "wb");
+            gdImagePng(graph.gd_image, pngout);
+            fclose(pngout);
+            break;
+        default:
+            break;
+    }
+}
 
-    for (size_t i = 0; i < width; i++) {
-        for (size_t j = 0; j < height; j++) {
-            complex double coords = coords_for_pixel(width, height, center, range, i, j);
-            set_pixel_gd(im, i, j, colors[choose_escape_color(coords, iterations)]);
+void
+graph_destroy(const graph_t graph)
+{
+    switch (graph.image_type) {
+        case CAIRO:
+            cairo_destroy(graph.cairo_image);
+            break;
+        case GD:
+            gdImageDestroy(graph.gd_image);
+            break;
+        default:
+            break;
+    }
+}
+
+void mandelbrot(const char *backend, const char *outputfile,
+        const size_t width, const size_t height, const size_t iterations,
+        const complex double center, const double range)
+{
+    graph_t image = graph_create(backend, width, height, center, range);
+
+    for (size_t i = 0; i < image.width; i++) {
+        for (size_t j = 0; j < image.height; j++) {
+            complex double c = graph_get_coordinates(image, i, j);
+            size_t colormap_entry = choose_escape_color(c, iterations);
+            graph_set_pixel(image, i, j, colormap_entry);
         }
     }
 
-    pngout = fopen(outputfile, "wb");
-    gdImagePng(im, pngout);
- 
-    fclose(pngout);
-    gdImageDestroy(im);
-}
+    graph_write(image, outputfile);
 
-void mandelbrot(const char *backend, const char *outputfile, const size_t width, const size_t height, const size_t iterations, const complex double center, const double range)
-{
-    if (0 == strcmp("cairo", backend))
-        mandelbrot_cairo(outputfile, width, height, iterations, center, range);
-    else
-        mandelbrot_gd(outputfile, width, height, iterations, center, range);
+    graph_destroy(image);
 }

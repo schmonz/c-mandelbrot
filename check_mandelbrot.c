@@ -34,14 +34,17 @@ START_TEST(test_complex_plane_coordinates)
     const double range = 4.0;
     complex double center = 0 + I * 0;
 
-    extremes_t foo = get_extreme_coordinates(width, height, center, range);
-    assert_complex_points_equal(-2 - I * 2, foo.lower_left);
-    assert_complex_points_equal( 2 + I * 2, foo.upper_right);
+    graph_t graph = graph_create("dummy-backend", width, height, center, range);
+
+    assert_complex_points_equal(-2 - I * 2, graph.extremes.lower_left);
+    assert_complex_points_equal( 2 + I * 2, graph.extremes.upper_right);
 
     assert_complex_points_equal(    0 + I * 0,
-            coords_for_pixel(width, height, center, range,     width / 2,     height / 2));
+            graph_get_coordinates(graph, width / 2, height / 2));
     assert_complex_points_equal(0.665 + I * 0.855,
-            coords_for_pixel(width, height, center, range, 2 * width / 3, 5 * height / 7));
+            graph_get_coordinates(graph, 2 * width / 3, 5 * height / 7));
+
+    graph_destroy(graph);
 }
 END_TEST
 
@@ -51,9 +54,12 @@ START_TEST(test_aspect_ratio_in_portrait)
     const double range = 2.0;
     complex double center = 0.25 + I * -0.3;
 
-    extremes_t foo = get_extreme_coordinates(width, height, center, range);
-    assert_complex_points_equal(-0.375 - I * 1.3, foo.lower_left);
-    assert_complex_points_equal( 0.875 + I * 0.7, foo.upper_right);
+    graph_t graph = graph_create("dummy-backend", width, height, center, range);
+
+    assert_complex_points_equal(-0.375 - I * 1.3, graph.extremes.lower_left);
+    assert_complex_points_equal( 0.875 + I * 0.7, graph.extremes.upper_right);
+
+    graph_destroy(graph);
 }
 END_TEST
 
@@ -63,9 +69,12 @@ START_TEST(test_aspect_ratio_in_landscape)
     const double range = 4.0;
     complex double center = -0.25 + I * 0.3;
 
-    extremes_t foo = get_extreme_coordinates(width, height, center, range);
-    assert_complex_points_equal(-2.25 - I * 1.2, foo.lower_left);
-    assert_complex_points_equal( 1.75 + I * 1.8, foo.upper_right);
+    graph_t graph = graph_create("dummy-backend", width, height, center, range);
+
+    assert_complex_points_equal(-2.25 - I * 1.2, graph.extremes.lower_left);
+    assert_complex_points_equal( 1.75 + I * 1.8, graph.extremes.upper_right);
+
+    graph_destroy(graph);
 }
 END_TEST
 
