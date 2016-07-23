@@ -64,9 +64,10 @@ endif
 ${THE_TESTS}: is-check-installed ${THE_LIBRARY} check_mandelbrot.c
 	${SILENT}${CC} ${CFLAGS} ${CAIRO_CFLAGS} ${GD_CFLAGS} ${CHECK_CFLAGS} -o ${THE_TESTS} check_mandelbrot.c ${THE_LIBRARY} ${LIBS} ${CAIRO_LIBS} ${GD_LIBS} ${MPC_LIBS} ${CHECK_LIBS}
 
-${THE_LIBRARY}: is-cairo-installed is-gd-installed is-mpc-installed mandelbrot.h mandelbrot.c
-	${SILENT}${CC} ${CFLAGS} ${CAIRO_CFLAGS} ${GD_CFLAGS} ${MPC_CFLAGS} -c mandelbrot.c
-	${SILENT}ar rc ${THE_LIBRARY} mandelbrot.o
+${THE_LIBRARY}: is-cairo-installed is-gd-installed is-mpc-installed graph.h graph.c mandelbrot.h mandelbrot.c
+	${SILENT}${CC} ${CFLAGS} ${CAIRO_CFLAGS} ${GD_CFLAGS} -c graph.c
+	${SILENT}${CC} ${CFLAGS} ${MPC_CFLAGS} -c mandelbrot.c
+	${SILENT}ar rc ${THE_LIBRARY} graph.o mandelbrot.o
 	${SILENT}ranlib ${THE_LIBRARY}
 
 ${THE_PROGRAM}: ${THE_LIBRARY} mandelbrot.h main.c

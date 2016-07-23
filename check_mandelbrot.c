@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include "graph.h"
 #include "mandelbrot.h"
 
 static void
