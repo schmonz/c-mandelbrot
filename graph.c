@@ -9,7 +9,7 @@ graph_t
 graph_create(const char *backend, const size_t width, const size_t height,
         const complex double center, const double range)
 {
-    graph_t image = {
+    graph_t graph = {
         0,
         NULL,
         width,
@@ -26,26 +26,26 @@ graph_create(const char *backend, const size_t width, const size_t height,
     };
 
     if (0 == strcmp("cairo", backend)) {
-        image.image_type = CAIRO;
+        graph.image_type = CAIRO;
 
-        image.image = cairo_create(
+        graph.image = cairo_create(
                 cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height));
 
-        cairo_set_line_width(image.image, 0.1);
+        cairo_set_line_width(graph.image, 0.1);
     } else {
-        image.image_type = GD;
+        graph.image_type = GD;
 
-        image.image = gdImageCreate(width, height);
+        graph.image = gdImageCreate(width, height);
 
         for (size_t i = 0; i < NUM_COLORS; i++) {
-            gdImageColorAllocate(image.image,
-                    image.colormap[i][0],
-                    image.colormap[i][1],
-                    image.colormap[i][2]);
+            gdImageColorAllocate(graph.image,
+                    graph.colormap[i][0],
+                    graph.colormap[i][1],
+                    graph.colormap[i][2]);
         }
     }
 
-    return image;
+    return graph;
 }
 
 extremes_t
