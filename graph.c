@@ -11,7 +11,7 @@ graph_create(const char *backend, const size_t width, const size_t height,
 {
     graph_t image = {
         0,
-        { NULL },
+        NULL,
         width,
         height,
         center,
@@ -28,17 +28,17 @@ graph_create(const char *backend, const size_t width, const size_t height,
     if (0 == strcmp("cairo", backend)) {
         image.image_type = CAIRO;
 
-        image.cairo_image = cairo_create(
+        image.image = cairo_create(
                 cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height));
 
-        cairo_set_line_width(image.cairo_image, 0.1);
+        cairo_set_line_width(image.image, 0.1);
     } else {
         image.image_type = GD;
 
-        image.gd_image = gdImageCreate(width, height);
+        image.image = gdImageCreate(width, height);
 
         for (size_t i = 0; i < NUM_COLORS; i++) {
-            gdImageColorAllocate(image.gd_image,
+            gdImageColorAllocate(image.image,
                     image.colormap[i][0],
                     image.colormap[i][1],
                     image.colormap[i][2]);
@@ -110,15 +110,15 @@ graph_set_pixel(const graph_t graph,
 {
     switch (graph.image_type) {
         case CAIRO:
-            cairo_rectangle(graph.cairo_image, horizontal, vertical, 1, 1);
-            cairo_set_source_rgb(graph.cairo_image,
+            cairo_rectangle(graph.image, horizontal, vertical, 1, 1);
+            cairo_set_source_rgb(graph.image,
                     graph.colormap[colormap_entry][0] / 255.0,
                     graph.colormap[colormap_entry][1] / 255.0,
                     graph.colormap[colormap_entry][2] / 255.0);
-            cairo_fill(graph.cairo_image);
+            cairo_fill(graph.image);
             break;
         case GD:
-            gdImageSetPixel(graph.gd_image, horizontal, vertical,
+            gdImageSetPixel(graph.image, horizontal, vertical,
                     colormap_entry);
             break;
         default:
@@ -133,12 +133,12 @@ graph_write(const graph_t graph, const char *outputfile)
 
     switch (graph.image_type) {
         case CAIRO:
-            cairo_surface_write_to_png(cairo_get_target(graph.cairo_image),
+            cairo_surface_write_to_png(cairo_get_target(graph.image),
                     outputfile);
             break;
         case GD:
             pngout = fopen(outputfile, "wb");
-            gdImagePng(graph.gd_image, pngout);
+            gdImagePng(graph.image, pngout);
             fclose(pngout);
             break;
         default:
@@ -151,10 +151,10 @@ graph_destroy(const graph_t graph)
 {
     switch (graph.image_type) {
         case CAIRO:
-            cairo_destroy(graph.cairo_image);
+            cairo_destroy(graph.image);
             break;
         case GD:
-            gdImageDestroy(graph.gd_image);
+            gdImageDestroy(graph.image);
             break;
         default:
             break;

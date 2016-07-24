@@ -5,16 +5,11 @@ typedef struct extreme_coordinates {
     complex double upper_right;
 } extremes_t;
 
-enum ImageType { CAIRO, GD };
-
 #define NUM_COLORS 4
-
+enum ImageType { CAIRO, GD };
 typedef struct graph {
     enum ImageType image_type;
-    union {
-        void *gd_image;	    /* gdImagePtr */
-        void *cairo_image;	/* cairo_t *  */
-    };
+    void *image;
     const size_t width;
     const size_t height;
     const complex double center;
