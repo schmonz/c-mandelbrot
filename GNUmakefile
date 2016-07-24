@@ -62,7 +62,7 @@ endif
 .PHONY: all check approval valgrind clean is-cairo-installed is-check-installed is-gd-installed is-mpc-installed
 
 ${THE_TESTS}: is-check-installed ${THE_LIBRARY} check_mandelbrot.c
-	${SILENT}${CC} ${CFLAGS} ${CAIRO_CFLAGS} ${GD_CFLAGS} ${CHECK_CFLAGS} -o ${THE_TESTS} check_mandelbrot.c ${THE_LIBRARY} ${LIBS} ${CAIRO_LIBS} ${GD_LIBS} ${MPC_LIBS} ${CHECK_LIBS}
+	${SILENT}${CC} ${CFLAGS} ${CHECK_CFLAGS} -o ${THE_TESTS} check_mandelbrot.c ${THE_LIBRARY} ${LIBS} ${CAIRO_LIBS} ${GD_LIBS} ${MPC_LIBS} ${CHECK_LIBS}
 
 ${THE_LIBRARY}: is-cairo-installed is-gd-installed is-mpc-installed graph.h graph.c mandelbrot.h mandelbrot.c
 	${SILENT}${CC} ${CFLAGS} ${CAIRO_CFLAGS} ${GD_CFLAGS} -c graph.c
