@@ -2,6 +2,7 @@
 
 #include <cairo/cairo.h>
 #include <gd.h>
+#include <Imlib2.h>
 
 #include "graph.h"
 
@@ -32,6 +33,12 @@ graph_create(const char *backend, const size_t width, const size_t height,
                 cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height));
 
         cairo_set_line_width(graph.image, 0.1);
+    } else if (0 == strcmp("imlib2", backend)) {
+        graph.image_type = IMLIB2;
+
+        graph.image = imlib_create_image(width, height);
+
+        imlib_context_set_image(graph.image);
     } else {
         graph.image_type = GD;
 
@@ -121,6 +128,14 @@ graph_set_pixel(const graph_t graph,
             gdImageSetPixel(graph.image, horizontal, vertical,
                     colormap_entry);
             break;
+        case IMLIB2:
+            imlib_context_set_color(
+                    graph.colormap[colormap_entry][0],
+                    graph.colormap[colormap_entry][1],
+                    graph.colormap[colormap_entry][2],
+                    255);
+            imlib_image_fill_rectangle(horizontal, vertical, 1, 1);
+            break;
         default:
             break;
     }
@@ -141,6 +156,10 @@ graph_write(const graph_t graph, const char *outputfile)
             gdImagePng(graph.image, pngout);
             fclose(pngout);
             break;
+        case IMLIB2:
+            imlib_image_set_format("png");
+            imlib_save_image(outputfile);
+            break;
         default:
             break;
     }
@@ -155,6 +174,9 @@ graph_destroy(const graph_t graph)
             break;
         case GD:
             gdImageDestroy(graph.image);
+            break;
+        case IMLIB2:
+            imlib_free_image();
             break;
         default:
             break;

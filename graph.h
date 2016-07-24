@@ -6,7 +6,7 @@ typedef struct extreme_coordinates {
 } extremes_t;
 
 #define NUM_COLORS 4
-enum ImageType { CAIRO, GD };
+enum ImageType { CAIRO, GD, IMLIB2 };
 typedef struct graph {
     enum ImageType image_type;
     void *image;
