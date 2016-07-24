@@ -1,4 +1,9 @@
+#ifndef GRAPH_H
+#define GRAPH_H
+
 #include <complex.h>
+#include <cairo/cairo.h>
+#include <gd.h>
 
 typedef struct extreme_coordinates {
     complex double lower_left;
@@ -9,7 +14,10 @@ typedef struct extreme_coordinates {
 enum ImageType { CAIRO, GD };
 typedef struct graph {
     enum ImageType image_type;
-    void *image;
+    union {
+          gdImagePtr gd_image;	    /* gdImagePtr */
+          cairo_t *cairo_image;	/* cairo_t *  */
+       };
     const size_t width;
     const size_t height;
     const complex double center;
@@ -24,3 +32,5 @@ void graph_destroy(const graph_t);
 complex double graph_get_coordinates(graph_t, const size_t, const size_t);
 void graph_set_pixel(const graph_t, const size_t, const size_t, const size_t);
 void graph_write(const graph_t, const char *);
+
+#endif

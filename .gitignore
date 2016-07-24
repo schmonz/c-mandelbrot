@@ -1,0 +1,5 @@
+*.o
+*.gch
+*.a
+check_mandelbrot
+main
