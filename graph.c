@@ -121,44 +121,42 @@ struct backend {
     void (*destroy)(graph_t);
 };
 
-static struct backend cairo = {
-    "cairo",
-    backend_cairo_create,
-    backend_cairo_set_pixel,
-    backend_cairo_write,
-    backend_cairo_destroy,
+static struct backend backends[] = {
+    {
+        "cairo",
+        backend_cairo_create,
+        backend_cairo_set_pixel,
+        backend_cairo_write,
+        backend_cairo_destroy,
+    },
+    {
+        "imlib2",
+        backend_imlib2_create,
+        backend_imlib2_set_pixel,
+        backend_imlib2_write,
+        backend_imlib2_destroy,
+    },
+    {
+        "gd",
+        backend_gd_create,
+        backend_gd_set_pixel,
+        backend_gd_write,
+        backend_gd_destroy,
+    },
 };
-
-static struct backend gd = {
-    "gd",
-    backend_gd_create,
-    backend_gd_set_pixel,
-    backend_gd_write,
-    backend_gd_destroy,
-};
-
-static struct backend imlib2 = {
-    "imlib2",
-    backend_imlib2_create,
-    backend_imlib2_set_pixel,
-    backend_imlib2_write,
-    backend_imlib2_destroy,
-};
+static const size_t NUM_BACKENDS = sizeof(backends) / (sizeof(backends[0]));
 
 static struct backend active_backend;
 
 static void
 graph_backend_create(graph_t *graph, const char *backend)
 {
-    if (0 == strcmp("cairo", backend)) {
-        active_backend = cairo;
-    } else if (0 == strcmp("imlib2", backend)) {
-        active_backend = imlib2;
-    } else {
-        active_backend = gd;
+    for (size_t i = 0; i < NUM_BACKENDS; i++) {
+        active_backend = backends[i];
+        if (0 == strcmp(active_backend.name, backend))
+            break;
     }
 
-    fprintf(stderr, "chosen backend: %s\n", active_backend.name);
     active_backend.create(graph);
 }
 
