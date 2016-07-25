@@ -12,7 +12,6 @@ backend_cairo_create(graph_t *graph)
     graph->image = cairo_create(
             cairo_image_surface_create(CAIRO_FORMAT_RGB24,
                 graph->width, graph->height));
-
     cairo_set_line_width(graph->image, 0.1);
 }
 
@@ -20,7 +19,6 @@ static void
 backend_gd_create(graph_t *graph)
 {
     graph->image = gdImageCreate(graph->width, graph->height);
-
     for (size_t i = 0; i < NUM_COLORS; i++) {
         gdImageColorAllocate(graph->image,
                 graph->colormap[i][0],
@@ -33,7 +31,6 @@ static void
 backend_imlib2_create(graph_t *graph)
 {
     graph->image = imlib_create_image(graph->width, graph->height);
-
     imlib_context_set_image(graph->image);
 }
 
@@ -74,8 +71,7 @@ backend_imlib2_set_pixel(const graph_t graph,
 static void
 backend_cairo_write(const graph_t graph, const char *outputfile)
 {
-    cairo_surface_write_to_png(cairo_get_target(graph.image),
-            outputfile);
+    cairo_surface_write_to_png(cairo_get_target(graph.image), outputfile);
 }
 
 static void
