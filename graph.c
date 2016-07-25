@@ -6,6 +6,37 @@
 
 #include "graph.h"
 
+static void
+graph_backend_create(graph_t *graph, const char *backend)
+{
+    if (0 == strcmp("cairo", backend)) {
+        graph->image_type = CAIRO;
+
+        graph->image = cairo_create(
+                cairo_image_surface_create(CAIRO_FORMAT_RGB24, graph->width,
+                    graph->height));
+
+        cairo_set_line_width(graph->image, 0.1);
+    } else if (0 == strcmp("imlib2", backend)) {
+        graph->image_type = IMLIB2;
+
+        graph->image = imlib_create_image(graph->width, graph->height);
+
+        imlib_context_set_image(graph->image);
+    } else {
+        graph->image_type = GD;
+
+        graph->image = gdImageCreate(graph->width, graph->height);
+
+        for (size_t i = 0; i < NUM_COLORS; i++) {
+            gdImageColorAllocate(graph->image,
+                    graph->colormap[i][0],
+                    graph->colormap[i][1],
+                    graph->colormap[i][2]);
+        }
+    }
+}
+
 graph_t
 graph_create(const char *backend, const size_t width, const size_t height,
         const complex double center, const double range)
@@ -26,31 +57,7 @@ graph_create(const char *backend, const size_t width, const size_t height,
         },
     };
 
-    if (0 == strcmp("cairo", backend)) {
-        graph.image_type = CAIRO;
-
-        graph.image = cairo_create(
-                cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height));
-
-        cairo_set_line_width(graph.image, 0.1);
-    } else if (0 == strcmp("imlib2", backend)) {
-        graph.image_type = IMLIB2;
-
-        graph.image = imlib_create_image(width, height);
-
-        imlib_context_set_image(graph.image);
-    } else {
-        graph.image_type = GD;
-
-        graph.image = gdImageCreate(width, height);
-
-        for (size_t i = 0; i < NUM_COLORS; i++) {
-            gdImageColorAllocate(graph.image,
-                    graph.colormap[i][0],
-                    graph.colormap[i][1],
-                    graph.colormap[i][2]);
-        }
-    }
+    graph_backend_create(&graph, backend);
 
     return graph;
 }
