@@ -7,16 +7,48 @@
 #include "graph.h"
 
 static void
+backend_cairo_create(graph_t *graph)
+{
+    graph->image_type = CAIRO;
+
+    graph->image = cairo_create(
+            cairo_image_surface_create(CAIRO_FORMAT_RGB24,
+                graph->width, graph->height));
+
+    cairo_set_line_width(graph->image, 0.1);
+}
+
+static void
+backend_cairo_set_pixel(const graph_t graph,
+        const size_t horizontal, const size_t vertical,
+        const size_t colormap_entry)
+{
+    cairo_rectangle(graph.image, horizontal, vertical, 1, 1);
+    cairo_set_source_rgb(graph.image,
+            graph.colormap[colormap_entry][0] / 255.0,
+            graph.colormap[colormap_entry][1] / 255.0,
+            graph.colormap[colormap_entry][2] / 255.0);
+    cairo_fill(graph.image);
+}
+
+static void
+backend_cairo_write(const graph_t graph, const char *outputfile)
+{
+    cairo_surface_write_to_png(cairo_get_target(graph.image),
+            outputfile);
+}
+
+static void
+backend_cairo_destroy(const graph_t graph)
+{
+    cairo_destroy(graph.image);
+}
+
+static void
 graph_backend_create(graph_t *graph, const char *backend)
 {
     if (0 == strcmp("cairo", backend)) {
-        graph->image_type = CAIRO;
-
-        graph->image = cairo_create(
-                cairo_image_surface_create(CAIRO_FORMAT_RGB24, graph->width,
-                    graph->height));
-
-        cairo_set_line_width(graph->image, 0.1);
+        backend_cairo_create(graph);
     } else if (0 == strcmp("imlib2", backend)) {
         graph->image_type = IMLIB2;
 
@@ -110,12 +142,7 @@ graph_set_pixel(const graph_t graph,
 {
     switch (graph.image_type) {
         case CAIRO:
-            cairo_rectangle(graph.image, horizontal, vertical, 1, 1);
-            cairo_set_source_rgb(graph.image,
-                    graph.colormap[colormap_entry][0] / 255.0,
-                    graph.colormap[colormap_entry][1] / 255.0,
-                    graph.colormap[colormap_entry][2] / 255.0);
-            cairo_fill(graph.image);
+            backend_cairo_set_pixel(graph, horizontal, vertical, colormap_entry);
             break;
         case GD:
             gdImageSetPixel(graph.image, horizontal, vertical,
@@ -141,8 +168,7 @@ graph_write(const graph_t graph, const char *outputfile)
 
     switch (graph.image_type) {
         case CAIRO:
-            cairo_surface_write_to_png(cairo_get_target(graph.image),
-                    outputfile);
+            backend_cairo_write(graph, outputfile);
             break;
         case GD:
             pngout = fopen(outputfile, "wb");
@@ -163,7 +189,7 @@ graph_destroy(const graph_t graph)
 {
     switch (graph.image_type) {
         case CAIRO:
-            cairo_destroy(graph.image);
+            backend_cairo_destroy(graph);
             break;
         case GD:
             gdImageDestroy(graph.image);
