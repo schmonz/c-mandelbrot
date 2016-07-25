@@ -9,8 +9,6 @@
 static void
 backend_cairo_create(graph_t *graph)
 {
-    graph->image_type = CAIRO;
-
     graph->image = cairo_create(
             cairo_image_surface_create(CAIRO_FORMAT_RGB24,
                 graph->width, graph->height));
@@ -21,8 +19,6 @@ backend_cairo_create(graph_t *graph)
 static void
 backend_gd_create(graph_t *graph)
 {
-    graph->image_type = GD;
-
     graph->image = gdImageCreate(graph->width, graph->height);
 
     for (size_t i = 0; i < NUM_COLORS; i++) {
@@ -36,8 +32,6 @@ backend_gd_create(graph_t *graph)
 static void
 backend_imlib2_create(graph_t *graph)
 {
-    graph->image_type = IMLIB2;
-
     graph->image = imlib_create_image(graph->width, graph->height);
 
     imlib_context_set_image(graph->image);
@@ -127,7 +121,7 @@ struct backend {
     void (*destroy)(graph_t);
 };
 
-struct backend cairo = {
+static struct backend cairo = {
     "cairo",
     backend_cairo_create,
     backend_cairo_set_pixel,
@@ -135,7 +129,7 @@ struct backend cairo = {
     backend_cairo_destroy,
 };
 
-struct backend gd = {
+static struct backend gd = {
     "gd",
     backend_gd_create,
     backend_gd_set_pixel,
@@ -143,7 +137,7 @@ struct backend gd = {
     backend_gd_destroy,
 };
 
-struct backend imlib2 = {
+static struct backend imlib2 = {
     "imlib2",
     backend_imlib2_create,
     backend_imlib2_set_pixel,
@@ -151,16 +145,21 @@ struct backend imlib2 = {
     backend_imlib2_destroy,
 };
 
+static struct backend active_backend;
+
 static void
 graph_backend_create(graph_t *graph, const char *backend)
 {
     if (0 == strcmp("cairo", backend)) {
-        cairo.create(graph);
+        active_backend = cairo;
     } else if (0 == strcmp("imlib2", backend)) {
-        imlib2.create(graph);
+        active_backend = imlib2;
     } else {
-        gd.create(graph);
+        active_backend = gd;
     }
+
+    fprintf(stderr, "chosen backend: %s\n", active_backend.name);
+    active_backend.create(graph);
 }
 
 graph_t
@@ -168,7 +167,6 @@ graph_create(const char *backend, const size_t width, const size_t height,
         const complex double center, const double range)
 {
     graph_t graph = {
-        0,
         NULL,
         width,
         height,
@@ -234,53 +232,17 @@ graph_set_pixel(const graph_t graph,
         const size_t horizontal, const size_t vertical,
         const size_t colormap_entry)
 {
-    switch (graph.image_type) {
-        case CAIRO:
-            cairo.set_pixel(graph, horizontal, vertical, colormap_entry);
-            break;
-        case GD:
-            gd.set_pixel(graph, horizontal, vertical, colormap_entry);
-            break;
-        case IMLIB2:
-            imlib2.set_pixel(graph, horizontal, vertical, colormap_entry);
-            break;
-        default:
-            break;
-    }
+    active_backend.set_pixel(graph, horizontal, vertical, colormap_entry);
 }
 
 void
 graph_write(const graph_t graph, const char *outputfile)
 {
-    switch (graph.image_type) {
-        case CAIRO:
-            cairo.write(graph, outputfile);
-            break;
-        case GD:
-            gd.write(graph, outputfile);
-            break;
-        case IMLIB2:
-            imlib2.write(graph, outputfile);
-            break;
-        default:
-            break;
-    }
+    active_backend.write(graph, outputfile);
 }
 
 void
 graph_destroy(const graph_t graph)
 {
-    switch (graph.image_type) {
-        case CAIRO:
-            cairo.destroy(graph);
-            break;
-        case GD:
-            gd.destroy(graph);
-            break;
-        case IMLIB2:
-            imlib2.destroy(graph);
-            break;
-        default:
-            break;
-    }
+    active_backend.destroy(graph);
 }
