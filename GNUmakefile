@@ -14,8 +14,9 @@ GD_LIBS		:= $(shell pkg-config --libs gdlib 2>/dev/null)
 IMAGEMAGICK	:= $(shell compare 2>/dev/null | grep ImageMagick)
 IMLIB2_CFLAGS	:= $(shell pkg-config --cflags imlib2 2>/dev/null)
 IMLIB2_LIBS	:= $(shell pkg-config --libs imlib2 2>/dev/null)
-
-BUILD_WITH_MPC	?= no
+MPC		:= $(shell cpp -dM ${GD_CFLAGS} -include mpc.h </dev/null 2>/dev/null | grep MPC_VERSION_STRING)
+MPC_CFLAGS	= ${GD_CFLAGS}
+MPC_LIBS	=  -lmpc -lmpfr -lgmp
 
 SILENT		=  @
 
@@ -24,7 +25,7 @@ all: check approval
 check: ${THE_TESTS}
 	${SILENT}./${THE_TESTS}
 
-approval: is-imagemagick-installed ${THE_PROGRAM}
+approval: .has_imagemagick ${THE_PROGRAM}
 	${SILENT}./${THE_PROGRAM} gd pngelbrot.png 800 500 100 0.0 0.0 4.0
 	${SILENT}./${APPROVAL_TESTS} pngelbrot.png
 
@@ -32,49 +33,61 @@ valgrind: ${THE_TESTS}
 	${SILENT}valgrind --leak-check=full --show-leak-kinds=all ./${THE_TESTS}
 
 clean:
-	${SILENT}rm -f *.o ${THE_TESTS} ${THE_LIBRARY} ${THE_PROGRAM}
+	${SILENT}rm -f .has_* *.o ${THE_TESTS} ${THE_LIBRARY} ${THE_PROGRAM}
 	${SILENT}rm -rf *.dSYM
 
-is-cairo-installed:
+.PHONY: all check approval valgrind clean
+
+.has_cairo:
 ifeq (, ${CAIRO_LIBS})
 	${SILENT}echo "Please install Cairo (https://www.cairographics.org)." && false
+else
+	${SILENT}touch .has_cairo
 endif
 
-is-check-installed:
+.has_check:
 ifeq (, ${CHECK_LIBS})
 	${SILENT}echo "Please install Check (https://libcheck.github.io/check/)." && false
+else
+	${SILENT}touch .has_check
 endif
 
-is-gd-installed:
+.has_gd:
 ifeq (, ${GD_LIBS})
 	${SILENT}echo "Please install GD (http://libgd.github.io)." && false
+else
+	${SILENT}touch .has_gd
 endif
 
-is-imagemagick-installed:
+.has_imagemagick:
 ifeq (, ${IMAGEMAGICK})
 	${SILENT}echo "Please install ImageMagick (http://www.imagemagick.org)." && false
+else
+	${SILENT}touch .has_imagemagick
 endif
 
-is-imlib2-installed:
+.has_imlib2:
 ifeq (, ${IMLIB2_LIBS})
 	${SILENT}echo "Please install Imlib 2 (http://docs.enlightenment.org/api/imlib2/html/)." && false
+else
+	${SILENT}touch .has_imlib2
 endif
 
-is-mpc-installed:
-ifeq (yes, ${BUILD_WITH_MPC}) # XXX a little too phony
-MPC_CFLAGS	=  -DUSE_MPC ${GD_CFLAGS}
-MPC_LIBS	=  -lmpc -lmpfr -lgmp
+.has_mpc:
+ifeq (, ${MPC})
+	${SILENT}echo "Please install GNU MPC (http://www.multiprecision.org)." && false
+else
+	${SILENT}touch .has_mpc
 endif
 
-.PHONY: all check approval valgrind clean is-cairo-installed is-check-installed is-gd-installed is-imagemagick-installed is-imlib2-installed is-mpc-installed
-
-${THE_TESTS}: is-check-installed ${THE_LIBRARY} check_mandelbrot.c
+${THE_TESTS}: .has_check ${THE_LIBRARY} check_mandelbrot.c
 	${SILENT}${CC} ${CFLAGS} ${CHECK_CFLAGS} -o ${THE_TESTS} check_mandelbrot.c ${THE_LIBRARY} ${LIBS} ${CAIRO_LIBS} ${GD_LIBS} ${IMLIB2_LIBS} ${MPC_LIBS} ${CHECK_LIBS}
 
-${THE_LIBRARY}: is-cairo-installed is-gd-installed is-imlib2-installed is-mpc-installed graph_cairo.h graph_gd.h graph_imlib2.h graph.h graph.c mandelbrot.h mandelbrot.c
+${THE_LIBRARY}: .has_cairo .has_gd .has_imlib2 .has_mpc graph_cairo.h graph_gd.h graph_imlib2.h graph.h graph.c mandelbrot.h mandelbrot.c mandelbrot_mpc.c
 	${SILENT}${CC} ${CFLAGS} ${CAIRO_CFLAGS} ${GD_CFLAGS} ${IMLIB2_CFLAGS} -c graph.c
-	${SILENT}${CC} ${CFLAGS} ${MPC_CFLAGS} -c mandelbrot.c
-	${SILENT}ar rc ${THE_LIBRARY} graph.o mandelbrot.o
+	${SILENT}${CC} ${CFLAGS} -c mandelbrot.c
+	${SILENT}${CC} ${CFLAGS} ${MPC_CFLAGS} -c mandelbrot_mpc.c
+	${SILENT}ar rc ${THE_LIBRARY} graph.o mandelbrot.o mandelbrot_mpc.o
 	${SILENT}ranlib ${THE_LIBRARY}
 
 ${THE_PROGRAM}: ${THE_LIBRARY} mandelbrot.h main.c

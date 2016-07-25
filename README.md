@@ -12,7 +12,6 @@ Now I'm drawing it in C:
 
 ## TODO
 
-7. Why does the code always get rebuilt?
 7. Improve safety and style of `graph_t.image` declaration.
 7. Why did Cairo get slower with this refactoring? Where are we spending our time?
 7. Choose colormap size at runtime.
