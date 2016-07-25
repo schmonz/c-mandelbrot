@@ -91,30 +91,16 @@ get_extreme_coordinates(const size_t width, const size_t height,
     return coords;
 }
 
-static double
-graph_get_a(const graph_t graph, const size_t horizontal)
-{
-    const double minimum_a = creal(graph.extremes.lower_left);
-    const double maximum_a = creal(graph.extremes.upper_right);
-
-    return minimum_a
-        + horizontal / (graph.width / (maximum_a - minimum_a));
-}
-
-static double
-graph_get_b(const graph_t graph, const size_t vertical)
-{
-    const double minimum_b = cimag(graph.extremes.lower_left);
-    const double maximum_b = cimag(graph.extremes.upper_right);
-
-    return minimum_b
-        + vertical / (graph.height / (maximum_b - minimum_b));
-}
-
 complex double
 graph_get_coordinates(const graph_t graph, const size_t i, const size_t j)
 {
-    return graph_get_a(graph, i) + I * graph_get_b(graph, j);
+    const double minimum_a = creal(graph.extremes.lower_left);
+    const double maximum_a = creal(graph.extremes.upper_right);
+    const double minimum_b = cimag(graph.extremes.lower_left);
+    const double maximum_b = cimag(graph.extremes.upper_right);
+
+    return (minimum_a + i / (graph.width / (maximum_a - minimum_a)))
+        + I * (minimum_b + j / (graph.height / (maximum_b - minimum_b)));
 }
 
 void
