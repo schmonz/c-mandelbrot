@@ -19,6 +19,31 @@ backend_cairo_create(graph_t *graph)
 }
 
 static void
+backend_gd_create(graph_t *graph)
+{
+    graph->image_type = GD;
+
+    graph->image = gdImageCreate(graph->width, graph->height);
+
+    for (size_t i = 0; i < NUM_COLORS; i++) {
+        gdImageColorAllocate(graph->image,
+                graph->colormap[i][0],
+                graph->colormap[i][1],
+                graph->colormap[i][2]);
+    }
+}
+
+static void
+backend_imlib2_create(graph_t *graph)
+{
+    graph->image_type = IMLIB2;
+
+    graph->image = imlib_create_image(graph->width, graph->height);
+
+    imlib_context_set_image(graph->image);
+}
+
+static void
 backend_cairo_set_pixel(const graph_t graph,
         const size_t horizontal, const size_t vertical,
         const size_t colormap_entry)
@@ -32,10 +57,47 @@ backend_cairo_set_pixel(const graph_t graph,
 }
 
 static void
+backend_gd_set_pixel(const graph_t graph,
+        const size_t horizontal, const size_t vertical,
+        const size_t colormap_entry)
+{
+    gdImageSetPixel(graph.image, horizontal, vertical, colormap_entry);
+}
+
+static void
+backend_imlib2_set_pixel(const graph_t graph,
+        const size_t horizontal, const size_t vertical,
+        const size_t colormap_entry)
+{
+    imlib_context_set_color(
+            graph.colormap[colormap_entry][0],
+            graph.colormap[colormap_entry][1],
+            graph.colormap[colormap_entry][2],
+            255);
+    imlib_image_fill_rectangle(horizontal, vertical, 1, 1);
+}
+
+static void
 backend_cairo_write(const graph_t graph, const char *outputfile)
 {
     cairo_surface_write_to_png(cairo_get_target(graph.image),
             outputfile);
+}
+
+static void
+backend_gd_write(const graph_t graph, const char *outputfile)
+{
+    FILE *pngout = fopen(outputfile, "wb");
+    gdImagePng(graph.image, pngout);
+    fclose(pngout);
+}
+
+static void
+backend_imlib2_write(const graph_t graph, const char *outputfile)
+{
+    (void)graph;
+    imlib_image_set_format("png");
+    imlib_save_image(outputfile);
 }
 
 static void
@@ -45,27 +107,59 @@ backend_cairo_destroy(const graph_t graph)
 }
 
 static void
+backend_gd_destroy(const graph_t graph)
+{
+    gdImageDestroy(graph.image);
+}
+
+static void
+backend_imlib2_destroy(const graph_t graph)
+{
+    (void)graph;
+    imlib_free_image();
+}
+
+struct backend {
+    const char *name;
+    void (*create)(graph_t *);
+    void (*set_pixel)(graph_t, size_t, size_t, size_t);
+    void (*write)(graph_t, const char *);
+    void (*destroy)(graph_t);
+};
+
+struct backend cairo = {
+    "cairo",
+    backend_cairo_create,
+    backend_cairo_set_pixel,
+    backend_cairo_write,
+    backend_cairo_destroy,
+};
+
+struct backend gd = {
+    "gd",
+    backend_gd_create,
+    backend_gd_set_pixel,
+    backend_gd_write,
+    backend_gd_destroy,
+};
+
+struct backend imlib2 = {
+    "imlib2",
+    backend_imlib2_create,
+    backend_imlib2_set_pixel,
+    backend_imlib2_write,
+    backend_imlib2_destroy,
+};
+
+static void
 graph_backend_create(graph_t *graph, const char *backend)
 {
     if (0 == strcmp("cairo", backend)) {
-        backend_cairo_create(graph);
+        cairo.create(graph);
     } else if (0 == strcmp("imlib2", backend)) {
-        graph->image_type = IMLIB2;
-
-        graph->image = imlib_create_image(graph->width, graph->height);
-
-        imlib_context_set_image(graph->image);
+        imlib2.create(graph);
     } else {
-        graph->image_type = GD;
-
-        graph->image = gdImageCreate(graph->width, graph->height);
-
-        for (size_t i = 0; i < NUM_COLORS; i++) {
-            gdImageColorAllocate(graph->image,
-                    graph->colormap[i][0],
-                    graph->colormap[i][1],
-                    graph->colormap[i][2]);
-        }
+        gd.create(graph);
     }
 }
 
@@ -142,19 +236,13 @@ graph_set_pixel(const graph_t graph,
 {
     switch (graph.image_type) {
         case CAIRO:
-            backend_cairo_set_pixel(graph, horizontal, vertical, colormap_entry);
+            cairo.set_pixel(graph, horizontal, vertical, colormap_entry);
             break;
         case GD:
-            gdImageSetPixel(graph.image, horizontal, vertical,
-                    colormap_entry);
+            gd.set_pixel(graph, horizontal, vertical, colormap_entry);
             break;
         case IMLIB2:
-            imlib_context_set_color(
-                    graph.colormap[colormap_entry][0],
-                    graph.colormap[colormap_entry][1],
-                    graph.colormap[colormap_entry][2],
-                    255);
-            imlib_image_fill_rectangle(horizontal, vertical, 1, 1);
+            imlib2.set_pixel(graph, horizontal, vertical, colormap_entry);
             break;
         default:
             break;
@@ -164,20 +252,15 @@ graph_set_pixel(const graph_t graph,
 void
 graph_write(const graph_t graph, const char *outputfile)
 {
-    FILE *pngout;
-
     switch (graph.image_type) {
         case CAIRO:
-            backend_cairo_write(graph, outputfile);
+            cairo.write(graph, outputfile);
             break;
         case GD:
-            pngout = fopen(outputfile, "wb");
-            gdImagePng(graph.image, pngout);
-            fclose(pngout);
+            gd.write(graph, outputfile);
             break;
         case IMLIB2:
-            imlib_image_set_format("png");
-            imlib_save_image(outputfile);
+            imlib2.write(graph, outputfile);
             break;
         default:
             break;
@@ -189,16 +272,15 @@ graph_destroy(const graph_t graph)
 {
     switch (graph.image_type) {
         case CAIRO:
-            backend_cairo_destroy(graph);
+            cairo.destroy(graph);
             break;
         case GD:
-            gdImageDestroy(graph.image);
+            gd.destroy(graph);
             break;
         case IMLIB2:
-            imlib_free_image();
+            imlib2.destroy(graph);
             break;
         default:
             break;
     }
 }
-
