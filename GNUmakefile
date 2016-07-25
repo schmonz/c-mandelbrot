@@ -1,4 +1,5 @@
 APPROVAL_TESTS	=  approve_mandelbrot
+BACKEND		?= gd
 THE_TESTS	=  check_mandelbrot
 THE_LIBRARY	=  mandelbrot.a
 THE_PROGRAM	=  main
@@ -26,7 +27,7 @@ check: ${THE_TESTS}
 	${SILENT}./${THE_TESTS}
 
 approval: .has_imagemagick ${THE_PROGRAM}
-	${SILENT}./${THE_PROGRAM} gd pngelbrot.png 800 500 100 0.0 0.0 4.0
+	${SILENT}./${THE_PROGRAM} ${BACKEND} pngelbrot.png 800 500 100 0.0 0.0 4.0
 	${SILENT}./${APPROVAL_TESTS} pngelbrot.png
 
 valgrind: ${THE_TESTS}
