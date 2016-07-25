@@ -13,6 +13,7 @@ Now I'm drawing it in C:
 ## TODO
 
 7. Improve safety and style of `graph_t.image` declaration.
+7. Why did Cairo get slower with this refactoring? Where are we spending our time?
 7. Choose colormap size at runtime.
 7. Add more graphics libraries (`imlib`? `gdk-pixbuf`?) and performance-test.
 7. Determine whether arbitrary-precision complex math can be made faster.
