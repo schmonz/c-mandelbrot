@@ -31,6 +31,7 @@ graph_backend_cairo_write(const graph_t graph, const char *outputfile)
 static void
 graph_backend_cairo_destroy(const graph_t graph)
 {
+    cairo_surface_destroy(cairo_get_target(graph.image));
     cairo_destroy(graph.image);
 }
 
