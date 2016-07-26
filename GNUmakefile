@@ -1,5 +1,8 @@
-APPROVAL_TESTS	=  approve_mandelbrot
+SILENT		?= @
 BACKEND		?= gd
+OUTPUTFILE	?= pngelbrot.png
+
+APPROVAL_TESTS	=  approve_mandelbrot
 THE_TESTS	=  check_mandelbrot
 THE_LIBRARY	=  mandelbrot.a
 THE_PROGRAM	=  main
@@ -19,16 +22,14 @@ MPC		:= $(shell cpp -dM ${GD_CFLAGS} -include mpc.h </dev/null 2>/dev/null | gre
 MPC_CFLAGS	= ${GD_CFLAGS}
 MPC_LIBS	=  -lmpc -lmpfr -lgmp
 
-SILENT		=  @
-
 all: check approval
 
 check: ${THE_TESTS}
 	${SILENT}./${THE_TESTS}
 
 approval: .has_imagemagick ${THE_PROGRAM}
-	${SILENT}./${THE_PROGRAM} ${BACKEND} pngelbrot.png 800 500 100 0.0 0.0 4.0
-	${SILENT}./${APPROVAL_TESTS} pngelbrot.png
+	${SILENT}./${THE_PROGRAM} ${BACKEND} ${OUTPUTFILE} 800 500 100 0.0 0.0 4.0
+	${SILENT}./${APPROVAL_TESTS} ${OUTPUTFILE}
 
 valgrind: ${THE_TESTS}
 	${SILENT}valgrind --leak-check=full --show-leak-kinds=all ./${THE_TESTS}
