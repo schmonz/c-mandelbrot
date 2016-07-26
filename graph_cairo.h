@@ -1,7 +1,7 @@
 #include <cairo/cairo.h>
 
 static void
-backend_cairo_create(graph_t *graph)
+graph_backend_cairo_create(graph_t *graph)
 {
     graph->image = cairo_create(
             cairo_image_surface_create(CAIRO_FORMAT_RGB24,
@@ -10,7 +10,7 @@ backend_cairo_create(graph_t *graph)
 }
 
 static void
-backend_cairo_set_pixel(const graph_t graph,
+graph_backend_cairo_set_pixel(const graph_t graph,
         const size_t horizontal, const size_t vertical,
         const size_t colormap_entry)
 {
@@ -23,21 +23,21 @@ backend_cairo_set_pixel(const graph_t graph,
 }
 
 static void
-backend_cairo_write(const graph_t graph, const char *outputfile)
+graph_backend_cairo_write(const graph_t graph, const char *outputfile)
 {
     cairo_surface_write_to_png(cairo_get_target(graph.image), outputfile);
 }
 
 static void
-backend_cairo_destroy(const graph_t graph)
+graph_backend_cairo_destroy(const graph_t graph)
 {
     cairo_destroy(graph.image);
 }
 
-static struct backend backend_cairo = {
+static graph_backend_t graph_backend_cairo = {
     "cairo",
-    backend_cairo_create,
-    backend_cairo_set_pixel,
-    backend_cairo_write,
-    backend_cairo_destroy,
+    graph_backend_cairo_create,
+    graph_backend_cairo_set_pixel,
+    graph_backend_cairo_write,
+    graph_backend_cairo_destroy,
 };

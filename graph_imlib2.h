@@ -1,14 +1,14 @@
 #include <Imlib2.h>
 
 static void
-backend_imlib2_create(graph_t *graph)
+graph_backend_imlib2_create(graph_t *graph)
 {
     graph->image = imlib_create_image(graph->width, graph->height);
     imlib_context_set_image(graph->image);
 }
 
 static void
-backend_imlib2_set_pixel(const graph_t graph,
+graph_backend_imlib2_set_pixel(const graph_t graph,
         const size_t horizontal, const size_t vertical,
         const size_t colormap_entry)
 {
@@ -21,7 +21,7 @@ backend_imlib2_set_pixel(const graph_t graph,
 }
 
 static void
-backend_imlib2_write(const graph_t graph, const char *outputfile)
+graph_backend_imlib2_write(const graph_t graph, const char *outputfile)
 {
     (void)graph;
     imlib_image_set_format("png");
@@ -29,16 +29,16 @@ backend_imlib2_write(const graph_t graph, const char *outputfile)
 }
 
 static void
-backend_imlib2_destroy(const graph_t graph)
+graph_backend_imlib2_destroy(const graph_t graph)
 {
     (void)graph;
     imlib_free_image();
 }
 
-static struct backend backend_imlib2 = {
+static graph_backend_t graph_backend_imlib2 = {
     "imlib2",
-    backend_imlib2_create,
-    backend_imlib2_set_pixel,
-    backend_imlib2_write,
-    backend_imlib2_destroy,
+    graph_backend_imlib2_create,
+    graph_backend_imlib2_set_pixel,
+    graph_backend_imlib2_write,
+    graph_backend_imlib2_destroy,
 };

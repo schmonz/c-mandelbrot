@@ -5,29 +5,30 @@
 #include "graph_gd.h"
 #include "graph_imlib2.h"
 
-static struct backend active_backend;
+static graph_backend_t graph_backend;
 
 static void
-graph_backend_create(graph_t *graph, const char *backend)
+graph_backend_create(graph_t *graph, const char *desired_graph_backend)
 {
     const size_t NUM_BACKENDS = 3;
-    struct backend backends[NUM_BACKENDS];
+    graph_backend_t graph_backends[NUM_BACKENDS];
 
-    backends[0] = backend_cairo;
-    backends[1] = backend_imlib2;
-    backends[2] = backend_gd;
+    graph_backends[0] = graph_backend_cairo;
+    graph_backends[1] = graph_backend_imlib2;
+    graph_backends[2] = graph_backend_gd;
 
     for (size_t i = 0; i < NUM_BACKENDS; i++) {
-        active_backend = backends[i];
-        if (0 == strcmp(active_backend.name, backend))
+        graph_backend = graph_backends[i];
+        if (0 == strcmp(graph_backend.name, desired_graph_backend))
             break;
     }
 
-    active_backend.create(graph);
+    graph_backend.create(graph);
 }
 
 graph_t
-graph_create(const char *backend, const size_t width, const size_t height,
+graph_create(const char *desired_graph_backend,
+        const size_t width, const size_t height,
         const complex double center, const double range)
 {
     graph_t graph = {
@@ -45,7 +46,7 @@ graph_create(const char *backend, const size_t width, const size_t height,
         },
     };
 
-    graph_backend_create(&graph, backend);
+    graph_backend_create(&graph, desired_graph_backend);
 
     return graph;
 }
@@ -96,17 +97,17 @@ graph_set_pixel(const graph_t graph,
         const size_t horizontal, const size_t vertical,
         const size_t colormap_entry)
 {
-    active_backend.set_pixel(graph, horizontal, vertical, colormap_entry);
+    graph_backend.set_pixel(graph, horizontal, vertical, colormap_entry);
 }
 
 void
 graph_write(const graph_t graph, const char *outputfile)
 {
-    active_backend.write(graph, outputfile);
+    graph_backend.write(graph, outputfile);
 }
 
 void
 graph_destroy(const graph_t graph)
 {
-    active_backend.destroy(graph);
+    graph_backend.destroy(graph);
 }

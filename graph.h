@@ -16,13 +16,13 @@ typedef struct graph {
     const size_t colormap[NUM_COLORS][3];
 } graph_t;
 
-struct backend {
+typedef struct graph_backend {
     const char *name;
     void (*create)(graph_t *);
     void (*set_pixel)(graph_t, size_t, size_t, size_t);
     void (*write)(graph_t, const char *);
     void (*destroy)(graph_t);
-};
+} graph_backend_t;
 
 extremes_t get_extreme_coordinates(const size_t, const size_t, const complex double, const double);
 graph_t graph_create(const char *, const size_t, const size_t, const complex double, const double);
