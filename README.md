@@ -14,6 +14,7 @@ Now I'm drawing it in C:
 
 ## TODO
 
+7. Add a graphics backend that draws to a window on screen.
 7. Add performance tests.
 7. Profile: where are we spending our time?
 7. Choose colormap size at runtime.
