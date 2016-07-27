@@ -15,8 +15,9 @@ Now I'm drawing it in C:
 ## TODO
 
 7. Extract math backends: native C real math, native C complex math, GNU MPC.
+7. Add performance tests for math and graphics.
+7. Add math backend: [GNU Scientific Library](https://www.gnu.org/software/gsl/gsl.html).
 7. Add a graphics backend that draws to a window on screen.
-7. Add performance tests.
 7. Profile: where are we spending our time?
 7. Choose colormap size at runtime.
 7. Compute escape times in parallel threads.
@@ -39,3 +40,4 @@ Now I'm drawing it in C:
 7. Try `cppcheck`.
 7. In a Mac GUI, display the initial image (then maybe add features).
 7. In an iPhone app, pinch to zoom (then maybe port to iPad).
+7. Get ideas from [XaoS](http://matek.hu/xaos) or [Fractint](http://fractint.org).
