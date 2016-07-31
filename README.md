@@ -41,3 +41,4 @@ Now I'm drawing it in C:
 7. In a Mac GUI, display the initial image (then maybe add features).
 7. In an iPhone app, pinch to zoom (then maybe port to iPad).
 7. Get ideas from [XaoS](http://matek.hu/xaos) or [Fractint](http://fractint.org).
+7. Get optimization ideas from [mandelbrot-js](https://github.com/cslarsen/mandelbrot-js).
