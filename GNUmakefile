@@ -1,4 +1,5 @@
 SILENT		?= @
+LIBTOOL_SILENT	?= >/dev/null 2>&1
 BACKEND		?= gd
 OUTPUTFILE	?= pngelbrot.png
 
@@ -6,9 +7,12 @@ APPROVAL_TESTS	=  approve_mandelbrot
 THE_TESTS	=  check_mandelbrot
 THE_LIBRARY	=  mandelbrot.a
 THE_PROGRAM	=  main
+DESTDIR		?= /Users/schmonz/Documents/trees/c-mandelbrot
+RPATH		?= /opt/pkg/lib
 
+LIBTOOL		?= /opt/pkg/bin/libtool ${LIBTOOL_SILENT}
 CFLAGS		+= -g -O0 -Wall -Werror -Wextra -std=c99
-LIBS		+= -lm
+LIBS		+= -ldl -lm
 CAIRO_CFLAGS	:= $(shell pkg-config --cflags cairo 2>/dev/null)
 CAIRO_LIBS	:= $(shell pkg-config --libs cairo 2>/dev/null)
 CHECK_CFLAGS	:= $(shell pkg-config --cflags check 2>/dev/null)
@@ -27,18 +31,20 @@ all: check approval
 check: ${THE_TESTS}
 	${SILENT}./${THE_TESTS}
 
-approval: .has_imagemagick ${THE_PROGRAM}
-	${SILENT}./${THE_PROGRAM} ${BACKEND} ${OUTPUTFILE} 800 500 100 0.0 0.0 4.0
+approval: .has_imagemagick ${THE_PROGRAM} graph_${BACKEND}.so
+	${SILENT}./${THE_PROGRAM} graph_${BACKEND}.so ${OUTPUTFILE} 800 500 100 0.0 0.0 4.0
 	${SILENT}./${APPROVAL_TESTS} ${OUTPUTFILE}
 
 valgrind: ${THE_TESTS}
 	${SILENT}valgrind --leak-check=full --show-leak-kinds=all ./${THE_TESTS}
 
 clean:
-	${SILENT}rm -f .has_* *.o ${THE_TESTS} ${THE_LIBRARY} ${THE_PROGRAM}
-	${SILENT}rm -rf *.dSYM
+	${SILENT}rm -f .has_* *.o *.lo *.la *.so ${THE_TESTS} ${THE_LIBRARY} ${THE_PROGRAM}
+	${SILENT}rm -rf *.dSYM .libs
 
-.PHONY: all check approval valgrind clean
+modules: graph_cairo.so graph_gd.so graph_imlib2.so
+
+.PHONY: all check approval valgrind clean modules
 
 .has_cairo:
 ifeq (, ${CAIRO_LIBS})
@@ -82,20 +88,38 @@ else
 	${SILENT}touch .has_mpc
 endif
 
-check_mandelbrot.o: .has_check mandelbrot.h mandelbrot.c
+check_mandelbrot.o: .has_check mandelbrot.h mandelbrot.c check_mandelbrot.c
 	${SILENT}${CC} ${CFLAGS} ${CHECK_CFLAGS} -c check_mandelbrot.c
 
 graph.o: graph.h graph.c
 	${SILENT}${CC} ${CFLAGS} -c graph.c
 
-graph_cairo.o: .has_cairo graph.h graph_cairo.h graph_cairo.c
-	${SILENT}${CC} ${CFLAGS} ${CAIRO_CFLAGS} -c graph_cairo.c
+graph_cairo.lo: .has_cairo graph.h graph_cairo.c
+	${SILENT}${LIBTOOL} --mode=compile --tag=CC ${CC} ${CFLAGS} ${CAIRO_CFLAGS} -c graph_cairo.c
 
-graph_gd.o: .has_gd graph.h graph_gd.h graph_gd.c
-	${SILENT}${CC} ${CFLAGS} ${GD_CFLAGS} -c graph_gd.c
+graph_cairo.la: graph_cairo.lo
+	${SILENT}${LIBTOOL} --mode=link --tag=CC ${CC} -module ${LDFLAGS} ${CAIRO_LIBS} -o graph_cairo.la graph_cairo.lo -version-info 0:0:0 -rpath ${RPATH}
 
-graph_imlib2.o: .has_imlib2 graph.h graph_imlib2.h graph_imlib2.c
-	${SILENT}${CC} ${CFLAGS} ${IMLIB2_CFLAGS} -c graph_imlib2.c
+graph_cairo.so: graph_cairo.la
+	${SILENT}${LIBTOOL} --mode=install install -c .libs/graph_cairo.so ${DESTDIR}/graph_cairo.so
+
+graph_gd.lo: .has_gd graph.h graph_gd.c
+	${SILENT}${LIBTOOL} --mode=compile --tag=CC ${CC} ${CFLAGS} ${GD_CFLAGS} -c graph_gd.c
+
+graph_gd.la: graph_gd.lo
+	${SILENT}${LIBTOOL} --mode=link --tag=CC ${CC} -module ${LDFLAGS} ${GD_LIBS} -o graph_gd.la graph_gd.lo -version-info 0:0:0 -rpath ${RPATH}
+
+graph_gd.so: graph_gd.la
+	${SILENT}${LIBTOOL} --mode=install install -c .libs/graph_gd.so ${DESTDIR}/graph_gd.so
+
+graph_imlib2.lo: .has_imlib2 graph.h graph_imlib2.c
+	${SILENT}${LIBTOOL} --mode=compile --tag=CC ${CC} ${CFLAGS} ${IMLIB2_CFLAGS} -c graph_imlib2.c
+
+graph_imlib2.la: graph_imlib2.lo
+	${SILENT}${LIBTOOL} --mode=link --tag=CC ${CC} -module ${LDFLAGS} ${IMLIB2_LIBS} -o graph_imlib2.la graph_imlib2.lo -version-info 0:0:0 -rpath ${RPATH}
+
+graph_imlib2.so: graph_imlib2.la
+	${SILENT}${LIBTOOL} --mode=install install -c .libs/graph_imlib2.so ${DESTDIR}/graph_imlib2.so
 
 main.o: mandelbrot.h main.c
 	${SILENT}${CC} ${CFLAGS} -c main.c
@@ -107,11 +131,11 @@ mandelbrot_mpc.o: .has_mpc mandelbrot.h mandelbrot_mpc.c
 	${SILENT}${CC} ${CFLAGS} ${MPC_CFLAGS} -c mandelbrot_mpc.c
 
 ${THE_TESTS}: ${THE_LIBRARY} check_mandelbrot.o
-	${SILENT}${CC} ${LDFLAGS} ${THE_LIBRARY} ${LIBS} ${CAIRO_LIBS} ${GD_LIBS} ${IMLIB2_LIBS} ${MPC_LIBS} ${CHECK_LIBS} check_mandelbrot.o -o ${THE_TESTS}
+	${SILENT}${CC} ${LDFLAGS} ${THE_LIBRARY} ${LIBS} ${MPC_LIBS} ${CHECK_LIBS} check_mandelbrot.o -o ${THE_TESTS}
 
-${THE_LIBRARY}: graph.o graph_cairo.o graph_gd.o graph_imlib2.o mandelbrot.o mandelbrot_mpc.o
-	${SILENT}ar rc ${THE_LIBRARY} graph.o graph_cairo.o graph_gd.o graph_imlib2.o mandelbrot.o mandelbrot_mpc.o
+${THE_LIBRARY}: modules graph.o mandelbrot.o mandelbrot_mpc.o
+	${SILENT}ar rc ${THE_LIBRARY} graph.o mandelbrot.o mandelbrot_mpc.o
 	${SILENT}ranlib ${THE_LIBRARY}
 
 ${THE_PROGRAM}: ${THE_LIBRARY} main.o
-	${SILENT}${CC} ${LDFLAGS} ${THE_LIBRARY} ${LIBS} ${CAIRO_LIBS} ${GD_LIBS} ${IMLIB2_LIBS} ${MPC_LIBS} main.o -o ${THE_PROGRAM}
+	${SILENT}${CC} ${LDFLAGS} ${THE_LIBRARY} ${LIBS} main.o -o ${THE_PROGRAM}

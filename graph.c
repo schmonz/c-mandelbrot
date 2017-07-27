@@ -1,27 +1,35 @@
+#include <dlfcn.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "graph.h"
-#include "graph_cairo.h"
-#include "graph_gd.h"
-#include "graph_imlib2.h"
 
+static void *graph_backend_module;
 static graph_backend_t graph_backend;
 
-static void
-graph_backend_create(graph_t *graph, const char *desired_graph_backend)
+static void *dlopen_or_die(const char *modulepath)
 {
-    const size_t NUM_BACKENDS = 3;
-    graph_backend_t graph_backends[NUM_BACKENDS];
+    void *actual = dlopen(modulepath, RTLD_LAZY);
+    if (!actual) _exit(77);
+    return actual;
+}
 
-    graph_backends[0] = graph_backend_cairo;
-    graph_backends[1] = graph_backend_imlib2;
-    graph_backends[2] = graph_backend_gd;
+static void *dlsym_or_die(void *module, const char *symbol)
+{
+    void *actual = dlsym(module, symbol);
+    if (!actual) _exit(88);
+    return actual;
+}
 
-    for (size_t i = 0; i < NUM_BACKENDS; i++) {
-        graph_backend = graph_backends[i];
-        if (0 == strcmp(graph_backend.name, desired_graph_backend))
-            break;
-    }
+static void
+graph_backend_init(graph_t *graph, const char *desired_graph_backend)
+{
+    graph_backend_module = dlopen_or_die(desired_graph_backend);
+
+    graph_backend.create = dlsym_or_die(graph_backend_module, "graph_backend_create");
+    graph_backend.set_pixel = dlsym_or_die(graph_backend_module, "graph_backend_set_pixel");
+    graph_backend.write = dlsym_or_die(graph_backend_module, "graph_backend_write");
+    graph_backend.destroy = dlsym_or_die(graph_backend_module, "graph_backend_destroy");
 
     graph_backend.create(graph);
 }
@@ -46,7 +54,7 @@ graph_create(const char *desired_graph_backend,
         },
     };
 
-    graph_backend_create(&graph, desired_graph_backend);
+    graph_backend_init(&graph, desired_graph_backend);
 
     return graph;
 }
@@ -110,4 +118,5 @@ void
 graph_destroy(const graph_t graph)
 {
     graph_backend.destroy(graph);
+    dlclose(graph_backend_module);
 }

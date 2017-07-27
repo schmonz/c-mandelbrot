@@ -1,8 +1,9 @@
 #include <gd.h>
-#include "graph_gd.h"
+
+#include "graph.h"
 
 void
-graph_backend_gd_create(graph_t *graph)
+graph_backend_create(graph_t *graph)
 {
     graph->image = gdImageCreate(graph->width, graph->height);
     for (size_t i = 0; i < NUM_COLORS; i++) {
@@ -14,7 +15,7 @@ graph_backend_gd_create(graph_t *graph)
 }
 
 void
-graph_backend_gd_set_pixel(const graph_t graph,
+graph_backend_set_pixel(const graph_t graph,
         const size_t horizontal, const size_t vertical,
         const size_t colormap_entry)
 {
@@ -22,7 +23,7 @@ graph_backend_gd_set_pixel(const graph_t graph,
 }
 
 void
-graph_backend_gd_write(const graph_t graph, const char *outputfile)
+graph_backend_write(const graph_t graph, const char *outputfile)
 {
     FILE *pngout = fopen(outputfile, "wb");
     gdImagePng(graph.image, pngout);
@@ -30,16 +31,7 @@ graph_backend_gd_write(const graph_t graph, const char *outputfile)
 }
 
 void
-graph_backend_gd_destroy(const graph_t graph)
+graph_backend_destroy(const graph_t graph)
 {
     gdImageDestroy(graph.image);
 }
-
-graph_backend_t graph_backend_gd = {
-    "gd",
-    graph_backend_gd_create,
-    graph_backend_gd_set_pixel,
-    graph_backend_gd_write,
-    graph_backend_gd_destroy,
-};
-

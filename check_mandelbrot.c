@@ -44,7 +44,7 @@ START_TEST(test_complex_plane_coordinates)
 {
     const int width = 800, height = width;
 
-    graph_t graph = graph_create("", width, height, 0 + I * 0, 4.0);
+    graph_t graph = graph_create("graph_gd.so", width, height, 0 + I * 0, 4.0);
 
     assert_complex_points_equal(-2 - I * 2, graph.extremes.lower_left);
     assert_complex_points_equal( 2 + I * 2, graph.extremes.upper_right);
@@ -62,7 +62,7 @@ START_TEST(test_aspect_ratio_in_portrait)
 {
     const int width = 500, height = 800;
 
-    graph_t graph = graph_create("", width, height, 0.25 + I * -0.3, 2.0);
+    graph_t graph = graph_create("graph_gd.so", width, height, 0.25 + I * -0.3, 2.0);
 
     assert_complex_points_equal(-0.375 - I * 1.3, graph.extremes.lower_left);
     assert_complex_points_equal( 0.875 + I * 0.7, graph.extremes.upper_right);
@@ -75,7 +75,7 @@ START_TEST(test_aspect_ratio_in_landscape)
 {
     const int width = 600, height = 450;
 
-    graph_t graph = graph_create("", width, height, -0.25 + I * 0.3, 4.0);
+    graph_t graph = graph_create("graph_gd.so", width, height, -0.25 + I * 0.3, 4.0);
 
     assert_complex_points_equal(-2.25 - I * 1.2, graph.extremes.lower_left);
     assert_complex_points_equal( 1.75 + I * 1.8, graph.extremes.upper_right);
