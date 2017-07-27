@@ -5,10 +5,10 @@ OUTPUTFILE	?= pngelbrot.png
 
 APPROVAL_TESTS	=  approve_mandelbrot
 THE_TESTS	=  check_mandelbrot
-THE_LIBRARY	=  mandelbrot.a
+THE_LIBRARY	=  libmandelbrot.dylib
 THE_PROGRAM	=  main
 DESTDIR		?= /Users/schmonz/Documents/trees/c-mandelbrot
-RPATH		?= /opt/pkg/lib
+RPATH		?= ${DESTDIR}
 
 LIBTOOL		?= /opt/pkg/bin/libtool ${LIBTOOL_SILENT}
 CFLAGS		+= -g -O0 -Wall -Werror -Wextra -std=c99
@@ -124,18 +124,21 @@ graph_imlib2.so: graph_imlib2.la
 main.o: mandelbrot.h main.c
 	${SILENT}${CC} ${CFLAGS} -c main.c
 
-mandelbrot.o: mandelbrot.h mandelbrot.c
-	${SILENT}${CC} ${CFLAGS} -c mandelbrot.c
+mandelbrot.lo: graph.h mandelbrot.h mandelbrot.c
+	${SILENT}${LIBTOOL} --mode=compile --tag=CC ${CC} ${CFLAGS} -c mandelbrot.c
 
-mandelbrot_mpc.o: .has_mpc mandelbrot.h mandelbrot_mpc.c
-	${SILENT}${CC} ${CFLAGS} ${MPC_CFLAGS} -c mandelbrot_mpc.c
+mandelbrot_mpc.lo: .has_mpc mandelbrot.h mandelbrot_mpc.c
+	${SILENT}${LIBTOOL} --mode=compile --tag=CC ${CC} ${CFLAGS} ${MPC_CFLAGS} -c mandelbrot_mpc.c
 
 ${THE_TESTS}: ${THE_LIBRARY} check_mandelbrot.o
-	${SILENT}${CC} ${LDFLAGS} ${THE_LIBRARY} ${LIBS} ${MPC_LIBS} ${CHECK_LIBS} check_mandelbrot.o -o ${THE_TESTS}
+	${SILENT}${CC} ${LDFLAGS} -L. -lmandelbrot ${LIBS} ${MPC_LIBS} ${CHECK_LIBS} check_mandelbrot.o -o ${THE_TESTS}
 
-${THE_LIBRARY}: modules graph.o mandelbrot.o mandelbrot_mpc.o
-	${SILENT}ar rc ${THE_LIBRARY} graph.o mandelbrot.o mandelbrot_mpc.o
-	${SILENT}ranlib ${THE_LIBRARY}
+${THE_LIBRARY}: libmandelbrot.la
+	${SILENT}${LIBTOOL} --mode=install install -c .libs/libmandelbrot.dylib ${DESTDIR}/libmandelbrot.dylib
+	${SILENT}${LIBTOOL} --mode=install install -c .libs/libmandelbrot.0.dylib ${DESTDIR}/libmandelbrot.0.dylib
+
+libmandelbrot.la: modules graph.o mandelbrot.lo mandelbrot_mpc.lo
+	${SILENT}${LIBTOOL} --mode=link --tag=CC ${CC} ${LDFLAGS} -o libmandelbrot.la mandelbrot.lo graph.o -version-info 0:0:0 -rpath ${RPATH}
 
 ${THE_PROGRAM}: ${THE_LIBRARY} main.o
-	${SILENT}${CC} ${LDFLAGS} ${THE_LIBRARY} ${LIBS} main.o -o ${THE_PROGRAM}
+	${SILENT}${CC} ${LDFLAGS} -L. -lmandelbrot ${LIBS} main.o -o ${THE_PROGRAM}
