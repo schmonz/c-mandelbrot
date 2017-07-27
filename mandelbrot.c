@@ -10,9 +10,8 @@ choose_escape_color(const complex double c, const size_t maximum_iterations)
     size_t escape = 0;
 
     complex double z = 0.0 + I * 0.0;
-    complex double temp;
 
-    for (; escape < maximum_iterations; escape++) {
+    for (complex double temp; escape < maximum_iterations; escape++) {
         temp = cpow(z, 2);
 
         if (cabs(temp) > 2)
