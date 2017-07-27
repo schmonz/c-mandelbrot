@@ -82,15 +82,36 @@ else
 	${SILENT}touch .has_mpc
 endif
 
-${THE_TESTS}: .has_check ${THE_LIBRARY} check_mandelbrot.c
-	${SILENT}${CC} ${CFLAGS} ${CHECK_CFLAGS} -o ${THE_TESTS} check_mandelbrot.c ${THE_LIBRARY} ${LIBS} ${CAIRO_LIBS} ${GD_LIBS} ${IMLIB2_LIBS} ${MPC_LIBS} ${CHECK_LIBS}
+check_mandelbrot.o: .has_check mandelbrot.h mandelbrot.c
+	${SILENT}${CC} ${CFLAGS} ${CHECK_CFLAGS} -c check_mandelbrot.c
 
-${THE_LIBRARY}: .has_cairo .has_gd .has_imlib2 .has_mpc graph_cairo.h graph_gd.h graph_imlib2.h graph.h graph.c mandelbrot.h mandelbrot.c mandelbrot_mpc.c
-	${SILENT}${CC} ${CFLAGS} ${CAIRO_CFLAGS} ${GD_CFLAGS} ${IMLIB2_CFLAGS} -c graph.c
+graph.o: graph.h graph.c
+	${SILENT}${CC} ${CFLAGS} -c graph.c
+
+graph_cairo.o: .has_cairo graph.h graph_cairo.h graph_cairo.c
+	${SILENT}${CC} ${CFLAGS} ${CAIRO_CFLAGS} -c graph_cairo.c
+
+graph_gd.o: .has_gd graph.h graph_gd.h graph_gd.c
+	${SILENT}${CC} ${CFLAGS} ${GD_CFLAGS} -c graph_gd.c
+
+graph_imlib2.o: .has_imlib2 graph.h graph_imlib2.h graph_imlib2.c
+	${SILENT}${CC} ${CFLAGS} ${IMLIB2_CFLAGS} -c graph_imlib2.c
+
+main.o: mandelbrot.h main.c
+	${SILENT}${CC} ${CFLAGS} -c main.c
+
+mandelbrot.o: mandelbrot.h mandelbrot.c
 	${SILENT}${CC} ${CFLAGS} -c mandelbrot.c
+
+mandelbrot_mpc.o: .has_mpc mandelbrot.h mandelbrot_mpc.c
 	${SILENT}${CC} ${CFLAGS} ${MPC_CFLAGS} -c mandelbrot_mpc.c
-	${SILENT}ar rc ${THE_LIBRARY} graph.o mandelbrot.o mandelbrot_mpc.o
+
+${THE_TESTS}: ${THE_LIBRARY} check_mandelbrot.o
+	${SILENT}${CC} ${LDFLAGS} ${THE_LIBRARY} ${LIBS} ${CAIRO_LIBS} ${GD_LIBS} ${IMLIB2_LIBS} ${MPC_LIBS} ${CHECK_LIBS} check_mandelbrot.o -o ${THE_TESTS}
+
+${THE_LIBRARY}: graph.o graph_cairo.o graph_gd.o graph_imlib2.o mandelbrot.o mandelbrot_mpc.o
+	${SILENT}ar rc ${THE_LIBRARY} graph.o graph_cairo.o graph_gd.o graph_imlib2.o mandelbrot.o mandelbrot_mpc.o
 	${SILENT}ranlib ${THE_LIBRARY}
 
-${THE_PROGRAM}: ${THE_LIBRARY} mandelbrot.h main.c
-	${SILENT}${CC} ${CFLAGS} -o ${THE_PROGRAM} main.c ${THE_LIBRARY} ${LIBS} ${CAIRO_LIBS} ${GD_LIBS} ${IMLIB2_LIBS} ${MPC_LIBS}
+${THE_PROGRAM}: ${THE_LIBRARY} main.o
+	${SILENT}${CC} ${LDFLAGS} ${THE_LIBRARY} ${LIBS} ${CAIRO_LIBS} ${GD_LIBS} ${IMLIB2_LIBS} ${MPC_LIBS} main.o -o ${THE_PROGRAM}

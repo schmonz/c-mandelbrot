@@ -1,4 +1,8 @@
+#ifndef _GRAPH_H_
+#define _GRAPH_H_
+
 #include <complex.h>
+#include <stddef.h>
 
 typedef struct extreme_coordinates {
     complex double lower_left;
@@ -30,3 +34,5 @@ void graph_destroy(const graph_t);
 complex double graph_get_coordinates(graph_t, const size_t, const size_t);
 void graph_set_pixel(const graph_t, const size_t, const size_t, const size_t);
 void graph_write(const graph_t, const char *);
+
+#endif
