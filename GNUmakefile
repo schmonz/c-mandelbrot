@@ -39,7 +39,7 @@ valgrind: ${THE_TESTS}
 	${SILENT}valgrind --leak-check=full --show-leak-kinds=all ./${THE_TESTS}
 
 clean:
-	${SILENT}rm -f .has_* *.o *.lo *.la *.so ${THE_TESTS} ${THE_LIBRARY} ${THE_PROGRAM}
+	${SILENT}rm -f .has_* *.o *.lo *.la *.so *.dylib ${THE_TESTS} ${THE_LIBRARY} ${THE_PROGRAM}
 	${SILENT}rm -rf *.dSYM .libs
 
 modules: graph_cairo.so graph_gd.so graph_imlib2.so
