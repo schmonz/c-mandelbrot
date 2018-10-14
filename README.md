@@ -1,5 +1,7 @@
 # c-mandelbrot
 
+[![Build Status](https://travis-ci.org/schmonz/c-mandelbrot.svg?branch=master)](https://travis-ci.org/schmonz/c-mandelbrot)
+
 Lately I've been
 [learning C](http://www.schmonz.com/2016/06/18/training-tdd-for-embedded-c/).
 Recently I shared the story of
