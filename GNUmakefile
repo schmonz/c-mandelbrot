@@ -141,8 +141,8 @@ ${THE_TESTS}: ${THE_LIBRARY} check_mandelbrot.o
 	${SILENT}${CC} ${LDFLAGS} -L. -lmandelbrot ${LIBS} ${MPC_LIBS} ${CHECK_LIBS} check_mandelbrot.o -o ${THE_TESTS}
 
 ${THE_LIBRARY}: libmandelbrot.la
-	${SILENT}${LIBTOOL} --mode=install install -c .libs/libmandelbrot.${DLEXT} ${DESTDIR}/libmandelbrot.${DLEXT}
-	${SILENT}${LIBTOOL} --mode=install install -c .libs/libmandelbrot.0.${DLEXT} ${DESTDIR}/libmandelbrot.0.${DLEXT}
+	${SILENT}${LIBTOOL} --mode=install install -c .libs/libmandelbrot.${DLEXT} ${DESTDIR}/
+	${SILENT}${LIBTOOL} --mode=install install -c .libs/libmandelbrot.*.${DLEXT} ${DESTDIR}/
 
 libmandelbrot.la: modules graph.lo mandelbrot.lo mandelbrot_mpc.lo
 	${SILENT}${LIBTOOL} --mode=link --tag=CC ${CC} ${LDFLAGS} -o libmandelbrot.la mandelbrot.lo graph.lo -version-info 0:0:0 -rpath ${RPATH}
