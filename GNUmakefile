@@ -5,14 +5,19 @@ OUTPUTFILE	?= pngelbrot.png
 
 APPROVAL_TESTS	=  approve_mandelbrot
 THE_TESTS	=  check_mandelbrot
-THE_LIBRARY	=  libmandelbrot.dylib
+THE_LIBRARY	=  libmandelbrot.${DLEXT}
 THE_PROGRAM	=  main
-DESTDIR		?= /Users/schmonz/Documents/trees/c-mandelbrot
+DESTDIR		?= ${CURDIR}
 RPATH		?= ${DESTDIR}
 
-LIBTOOL		?= /opt/pkg/bin/libtool ${LIBTOOL_SILENT}
+LIBTOOL		?= libtool ${LIBTOOL_SILENT}
 CFLAGS		+= -g -O0 -Wall -Werror -Wextra -std=c99 ${OSX_CFLAGS}
 LIBS		+= -ldl -lm
+ifeq ($(shell uname), Darwin)
+DLEXT		= dylib
+else
+DLEXT		= so
+endif
 OSX_INCLUDES	= /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include
 OSX_CFLAGS	:= $(shell test -d ${OSX_INCLUDES} && echo -I${OSX_INCLUDES})
 CAIRO_CFLAGS	:= $(shell pkg-config --cflags cairo 2>/dev/null)
@@ -93,8 +98,8 @@ endif
 check_mandelbrot.o: .has_check mandelbrot.h mandelbrot.c check_mandelbrot.c
 	${SILENT}${CC} ${CFLAGS} ${CHECK_CFLAGS} -c check_mandelbrot.c
 
-graph.o: graph.h graph.c
-	${SILENT}${CC} ${CFLAGS} -c graph.c
+graph.lo: graph.h graph.c
+	${SILENT}${LIBTOOL} --mode=compile --tag=CC ${CC} ${CFLAGS} -c graph.c
 
 graph_cairo.lo: .has_cairo graph.h graph_cairo.c
 	${SILENT}${LIBTOOL} --mode=compile --tag=CC ${CC} ${CFLAGS} ${CAIRO_CFLAGS} -c graph_cairo.c
@@ -136,11 +141,11 @@ ${THE_TESTS}: ${THE_LIBRARY} check_mandelbrot.o
 	${SILENT}${CC} ${LDFLAGS} -L. -lmandelbrot ${LIBS} ${MPC_LIBS} ${CHECK_LIBS} check_mandelbrot.o -o ${THE_TESTS}
 
 ${THE_LIBRARY}: libmandelbrot.la
-	${SILENT}${LIBTOOL} --mode=install install -c .libs/libmandelbrot.dylib ${DESTDIR}/libmandelbrot.dylib
-	${SILENT}${LIBTOOL} --mode=install install -c .libs/libmandelbrot.0.dylib ${DESTDIR}/libmandelbrot.0.dylib
+	${SILENT}${LIBTOOL} --mode=install install -c .libs/libmandelbrot.${DLEXT} ${DESTDIR}/libmandelbrot.${DLEXT}
+	${SILENT}${LIBTOOL} --mode=install install -c .libs/libmandelbrot.0.${DLEXT} ${DESTDIR}/libmandelbrot.0.${DLEXT}
 
-libmandelbrot.la: modules graph.o mandelbrot.lo mandelbrot_mpc.lo
-	${SILENT}${LIBTOOL} --mode=link --tag=CC ${CC} ${LDFLAGS} -o libmandelbrot.la mandelbrot.lo graph.o -version-info 0:0:0 -rpath ${RPATH}
+libmandelbrot.la: modules graph.lo mandelbrot.lo mandelbrot_mpc.lo
+	${SILENT}${LIBTOOL} --mode=link --tag=CC ${CC} ${LDFLAGS} -o libmandelbrot.la mandelbrot.lo graph.lo -version-info 0:0:0 -rpath ${RPATH}
 
 ${THE_PROGRAM}: ${THE_LIBRARY} main.o
 	${SILENT}${CC} ${LDFLAGS} -L. -lmandelbrot ${LIBS} main.o -o ${THE_PROGRAM}
