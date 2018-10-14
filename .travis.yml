@@ -13,5 +13,6 @@ addons:
     - libgd2-xpm-dev
     - imagemagick
     - libmpc-dev
+    - libimlib2-dev
 
 script: make
