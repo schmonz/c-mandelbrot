@@ -1,5 +1,5 @@
-SILENT		?= @
-LIBTOOL_SILENT	?= >/dev/null 2>&1
+#SILENT		?= @
+#LIBTOOL_SILENT	?= >/dev/null 2>&1
 BACKEND		?= gd
 OUTPUTFILE	?= pngelbrot.png
 
