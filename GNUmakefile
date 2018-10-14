@@ -11,8 +11,10 @@ DESTDIR		?= /Users/schmonz/Documents/trees/c-mandelbrot
 RPATH		?= ${DESTDIR}
 
 LIBTOOL		?= /opt/pkg/bin/libtool ${LIBTOOL_SILENT}
-CFLAGS		+= -g -O0 -Wall -Werror -Wextra -std=c99
+CFLAGS		+= -g -O0 -Wall -Werror -Wextra -std=c99 ${OSX_CFLAGS}
 LIBS		+= -ldl -lm
+OSX_INCLUDES	= /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include
+OSX_CFLAGS	:= $(shell test -d ${OSX_INCLUDES} && echo -I${OSX_INCLUDES})
 CAIRO_CFLAGS	:= $(shell pkg-config --cflags cairo 2>/dev/null)
 CAIRO_LIBS	:= $(shell pkg-config --libs cairo 2>/dev/null)
 CHECK_CFLAGS	:= $(shell pkg-config --cflags check 2>/dev/null)
