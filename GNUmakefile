@@ -46,7 +46,7 @@ valgrind: ${THE_TESTS}
 	${SILENT}valgrind --leak-check=full --show-leak-kinds=all ./${THE_TESTS}
 
 clean:
-	${SILENT}rm -f .has_* *.o *.lo *.la *.so *.dylib ${THE_TESTS} ${THE_LIBRARY} ${THE_PROGRAM}
+	${SILENT}rm -f .has_* *.o *.a *.lo *.la *.so *.dylib ${THE_TESTS} ${THE_LIBRARY} ${THE_PROGRAM}
 	${SILENT}rm -rf *.dSYM .libs
 
 modules: graph_cairo.so graph_gd.so graph_imlib2.so
@@ -141,8 +141,7 @@ ${THE_TESTS}: ${THE_LIBRARY} check_mandelbrot.o
 	${SILENT}${CC} ${LDFLAGS} -L. -lmandelbrot ${LIBS} ${MPC_LIBS} ${CHECK_LIBS} check_mandelbrot.o -o ${THE_TESTS}
 
 ${THE_LIBRARY}: libmandelbrot.la
-	${SILENT}${LIBTOOL} --mode=install install -c .libs/libmandelbrot.${DLEXT} ${DESTDIR}/
-	${SILENT}${LIBTOOL} --mode=install install -c .libs/libmandelbrot.*.${DLEXT} ${DESTDIR}/
+	${SILENT}${LIBTOOL} --mode=install install -c libmandelbrot.la ${DESTDIR}/libmandelbrot.la
 
 libmandelbrot.la: modules graph.lo mandelbrot.lo mandelbrot_mpc.lo
 	${SILENT}${LIBTOOL} --mode=link --tag=CC ${CC} ${LDFLAGS} -o libmandelbrot.la mandelbrot.lo graph.lo -version-info 0:0:0 -rpath ${RPATH}
