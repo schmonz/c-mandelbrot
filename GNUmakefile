@@ -95,8 +95,8 @@ else
 	${SILENT}touch .has_mpc
 endif
 
-check_mandelbrot.o: .has_check mandelbrot.h mandelbrot.c check_mandelbrot.c
-	${SILENT}${CC} ${CFLAGS} ${CHECK_CFLAGS} -c check_mandelbrot.c
+check_mandelbrot.lo: .has_check mandelbrot.h mandelbrot.c check_mandelbrot.c
+	${SILENT}${LIBTOOL} --mode=compile --tag=CC ${CC} ${CFLAGS} ${CHECK_CFLAGS} -c check_mandelbrot.c
 
 graph.lo: graph.h graph.c
 	${SILENT}${LIBTOOL} --mode=compile --tag=CC ${CC} ${CFLAGS} -c graph.c
@@ -128,8 +128,8 @@ graph_imlib2.la: graph_imlib2.lo
 graph_imlib2.so: graph_imlib2.la
 	${SILENT}${LIBTOOL} --mode=install install -c .libs/graph_imlib2.so ${DESTDIR}/graph_imlib2.so
 
-main.o: mandelbrot.h main.c
-	${SILENT}${CC} ${CFLAGS} -c main.c
+main.lo: mandelbrot.h main.c
+	${SILENT}${LIBTOOL} --mode=compile --tag=CC ${CC} ${CFLAGS} -c main.c
 
 mandelbrot.lo: graph.h mandelbrot.h mandelbrot.c
 	${SILENT}${LIBTOOL} --mode=compile --tag=CC ${CC} ${CFLAGS} -c mandelbrot.c
@@ -137,8 +137,8 @@ mandelbrot.lo: graph.h mandelbrot.h mandelbrot.c
 mandelbrot_mpc.lo: .has_mpc mandelbrot.h mandelbrot_mpc.c
 	${SILENT}${LIBTOOL} --mode=compile --tag=CC ${CC} ${CFLAGS} ${MPC_CFLAGS} -c mandelbrot_mpc.c
 
-${THE_TESTS}: ${THE_LIBRARY} check_mandelbrot.o
-	${SILENT}${CC} ${LDFLAGS} -L. -lmandelbrot ${LIBS} ${MPC_LIBS} ${CHECK_LIBS} check_mandelbrot.o -o ${THE_TESTS}
+${THE_TESTS}: ${THE_LIBRARY} check_mandelbrot.lo
+	${SILENT}${LIBTOOL} --mode=link --tag=CC ${CC} ${LDFLAGS} -L. -lmandelbrot ${LIBS} ${MPC_LIBS} ${CHECK_LIBS} check_mandelbrot.lo -o ${THE_TESTS}
 
 ${THE_LIBRARY}: libmandelbrot.la
 	${SILENT}${LIBTOOL} --mode=install install -c libmandelbrot.la ${DESTDIR}/libmandelbrot.la
@@ -146,5 +146,5 @@ ${THE_LIBRARY}: libmandelbrot.la
 libmandelbrot.la: modules graph.lo mandelbrot.lo mandelbrot_mpc.lo
 	${SILENT}${LIBTOOL} --mode=link --tag=CC ${CC} ${LDFLAGS} -o libmandelbrot.la mandelbrot.lo graph.lo -version-info 0:0:0 -rpath ${RPATH}
 
-${THE_PROGRAM}: ${THE_LIBRARY} main.o
-	${SILENT}${CC} ${LDFLAGS} -L. -lmandelbrot ${LIBS} main.o -o ${THE_PROGRAM}
+${THE_PROGRAM}: ${THE_LIBRARY} main.lo
+	${SILENT}${LIBTOOL} --mode=link --tag=CC ${CC} ${LDFLAGS} -L. -lmandelbrot ${LIBS} main.lo -o ${THE_PROGRAM}
