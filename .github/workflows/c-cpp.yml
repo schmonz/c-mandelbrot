@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - name: dependencies
-      run: sudo apt install check imagemagick libtool libcairo2-dev libgd-dev libgd2-xpm-dev libmpc-dev libimlib2-dev
+      run: sudo apt-get install check imagemagick libtool libmpc-dev libcairo2-dev libgd-dev libimlib2-dev
     - uses: actions/checkout@v2
     - name: configure
       run: ./configure
