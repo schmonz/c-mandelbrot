@@ -7,6 +7,7 @@ compiler: gcc
 addons:
   apt:
     packages:
+    - libtool
     - libcairo2-dev
     - check
     - libgd-dev
