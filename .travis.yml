@@ -15,4 +15,4 @@ addons:
     - libmpc-dev
     - libimlib2-dev
 
-script: make SILENT=
+script: make SILENT= LIBTOOL_SILENT=
