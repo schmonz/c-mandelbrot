@@ -15,7 +15,5 @@ jobs:
     - name: dependencies
       run: sudo apt-get install check imagemagick libtool libmpc-dev libcairo2-dev libgd-dev libimlib2-dev
     - uses: actions/checkout@v2
-    - name: configure
-      run: ./configure
     - name: make
       run: make SILENT= LIBTOOL_SILENT=
