@@ -1,6 +1,6 @@
 # c-mandelbrot
 
-[![Build Status](https://travis-ci.org/schmonz/c-mandelbrot.svg?branch=master)](https://travis-ci.org/schmonz/c-mandelbrot)
+[![Build Status](https://travis-ci.org/schmonz/c-mandelbrot.svg?branch=main)](https://travis-ci.org/schmonz/c-mandelbrot)
 
 Lately I've been
 [learning C](http://www.schmonz.com/2016/06/18/training-tdd-for-embedded-c/).
@@ -12,7 +12,7 @@ In so doing, I seem to have revived my own interest in the
 [Mandelbrot set](https://en.wikipedia.org/wiki/Mandelbrot_set).
 Now I'm drawing it in C:
 
-![Latest Image](https://github.com/schmonz/c-mandelbrot/raw/master/pngelbrot.png)
+![Latest Image](https://github.com/schmonz/c-mandelbrot/raw/main/pngelbrot.png)
 
 ## TODO
 
