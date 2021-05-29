@@ -36,7 +36,7 @@ MPC_LIBS	=  -lmpc -lmpfr -lgmp
 all: check approval
 
 check: ${THE_TESTS}
-	${SILENT}./${THE_TESTS}
+	${SILENT}LD_LIBRARY_PATH=${RPATH} ./${THE_TESTS}
 
 approval: .has_imagemagick ${THE_PROGRAM} graph_${BACKEND}.so
 	${SILENT}./${THE_PROGRAM} graph_${BACKEND}.so ${OUTPUTFILE} 800 500 100 0.0 0.0 4.0
