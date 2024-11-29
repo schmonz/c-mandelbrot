@@ -1,6 +1,6 @@
 # c-mandelbrot
 
-![Build Status](https://github.com/schmonz/c-mandelbrot/actions/workflows/c-cpp.yml/badge.svg)
+[![Build status](https://github.com/schmonz/c-mandelbrot/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/schmonz/c-mandelbrot/actions/workflows/c-cpp.yml)
 
 Lately I've been
 [learning C](http://www.schmonz.com/2016/06/18/training-tdd-for-embedded-c/).
